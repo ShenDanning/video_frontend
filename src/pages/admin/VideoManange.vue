@@ -482,7 +482,8 @@ export default {
 
     },
     uploadShow(){
-    this.modal3 = true
+       this.modal3 = true
+
     },
     // typeShow(){
     //   this.modal5 = true
@@ -495,17 +496,19 @@ export default {
     getRow(index, rows,val) {
       if(val===1){
         this.modal1=true;
+        this.videoInfo.id=rows.id;
       }else if(val===2){
         this.modal2=true;
         this.videoInfo.id=rows.id;
         this.videoInfo.url=rows.url;
       }else if (val === 4){
+        this.videoInfo.id=rows.id;
         this.modal4 = true
       }
     },
     async editPicture(){
       var formdata = new FormData();
-      // alert(this.videoInfo.picture)
+      //alert(this.videoInfo.id)
       formdata.append('file', this.videoInfo.picture.file);
       formdata.append('videoId',this.videoInfo.id);
       var data =(await editPicture(formdata)).data;
@@ -528,7 +531,8 @@ export default {
       var data =(await editVideo(formdata)).data;
       if(data.status===200){
         this.$Message.success(data.msg);
-        this.getAllVideo(1);
+        location.reload();
+
       }else{
         this.$message.error("Fail");
       }
@@ -609,6 +613,7 @@ export default {
     //获取分类
     this.getTypeList();
     // alert(this.type)
+
 
   }
 }
