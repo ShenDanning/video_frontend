@@ -7,7 +7,7 @@
               <el-menu-item v-for="item in tagList" :key="item.id" :index="item.id.toString()">
                 {{ item.tag }}
               </el-menu-item>
-              <el-menu-item style="float: right" index="100">
+              <el-menu-item style="float: right" index="-1">
                 <Input
                   v-model="searchTitle"
                   :search="true"
