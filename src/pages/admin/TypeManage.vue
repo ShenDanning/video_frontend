@@ -14,46 +14,55 @@
                       @click.native.prevent="typeShow()"
               >添加分类</Button>
             </Row>
-            <el-table
-              :data="tableData"
-              style="width: 100%">
-              <el-table-column
-                label="分类号"
-                width="180">
-                <template slot-scope="scope">
-<!--                  <i class="el-icon-time"></i>-->
-                  <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="分类名"
-                width="180">
-                <template slot-scope="scope">
-                  <el-tag size="medium">{{ scope.row.type }}</el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="创建人"
-                width="180">
-                <template slot-scope="scope">
-                  <!--                  <i class="el-icon-time"></i>-->
-                  <span style="margin-left: 10px">{{ scope.row.author }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作">
-                <template slot-scope="scope">
-                  <el-button
-                    @click.native.prevent="getRow(scope.$index,scope.row,1)"
-                    size="mini">
-                    编辑
-                  </el-button>
-                  <el-button
-                    size="mini"
-                    type="danger"
-                    @click.native.prevent="deleteRow(scope.$index,scope.row)">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
+            <Row style="height: 20px"></Row>
+
+              <el-table
+                :data="tableData"
+                style="width: 100%;">
+                <el-table-column
+                  label="分类号"
+                  width="180"
+                  align="center"
+                >
+                  <template slot-scope="scope">
+                    <!--                  <i class="el-icon-time"></i>-->
+                    <span style="margin-left: 10px">{{ scope.row.id }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="分类名"
+                  width="180"
+                  align="center"
+                >
+                  <template slot-scope="scope">
+                    <el-tag size="medium">{{ scope.row.type }}</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="创建人"
+                  width="180"
+                  align="center"
+                >
+                  <template slot-scope="scope">
+                    <!--                  <i class="el-icon-time"></i>-->
+                    <span style="margin-left: 10px">{{ scope.row.author }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="getRow(scope.$index,scope.row,1)"
+                      size="mini">
+                      编辑
+                    </el-button>
+                    <el-button
+                      size="mini"
+                      type="danger"
+                      @click.native.prevent="deleteRow(scope.$index,scope.row)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+
             <div class="block">
               <!--                <span class="demonstration">页数较少时的效果</span>-->
               <el-pagination
@@ -83,7 +92,7 @@
               @on-ok="ok5"
               @on-cancel="cancel">
               <el-form label-position="left" label-width="80px" :model="TypeInfo">
-                <el-form-item label="分类标题">
+                <el-form-item label="分类名">
                   <el-input v-model="typeInfo.typeName"></el-input>
                 </el-form-item>
               </el-form>
@@ -220,7 +229,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.deleteType(rows.id);
-        this.getTypeList();
+
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -232,6 +241,7 @@ export default {
       var data  = (await(deleteType(typeId))).data;
       if(data.status===200){
         this.$message.success("删除成功")
+        await this.getTypeList();
       }else{
         this.$message.error("删除失败")}
     },

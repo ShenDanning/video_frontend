@@ -13,9 +13,9 @@
                 <Button type="primary"  icon="md-add" style="float: left"
                         @click.native.prevent="uploadShow()"
                 >上传视频</Button>
-                  <Button type="primary"  icon="ios-construct" style="float: left;margin-left: 20px"
-                          @click.native.prevent="typeShow()"
-                  >管理分类</Button>
+<!--                  <Button type="primary"  icon="ios-construct" style="float: left;margin-left: 20px"-->
+<!--                          @click.native.prevent="typeShow()"-->
+<!--                  >管理分类</Button>-->
                 <Input
                   v-model="searchTitle"
                   :search="true"
@@ -80,7 +80,9 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="140">
+                width="180"
+                align="center"
+              >
                 <template slot-scope="scope">
                   <el-button
                     @click.native.prevent="deleteRow(scope.$index,scope.row)"
@@ -99,6 +101,12 @@
                     type="text"
                     size="small">
                     预览
+                  </el-button>
+                  <el-button
+                    @click.native.prevent="publishRow(scope.$index,scope.row)"
+                    type="text"
+                    size="small">
+                    发布
                   </el-button>
                 </template>
               </el-table-column>
@@ -237,12 +245,19 @@
             </Modal>
             <Modal
               v-model="modal5"
-              title="分类信息"
+              title="请选择一个标签"
               @on-ok="ok5"
               @on-cancel="cancel">
-              <el-form label-position="left" label-width="80px" :model="TypeInfo">
-                <el-form-item label="分类标题">
-                  <el-input v-model="TypeInfo.typeName"></el-input>
+              <el-form label-position="left" label-width="80px" :model="tagInfo">
+                <el-form-item label="标签名">
+                  <el-select v-model="tagInfo.id" placeholder="请选择">
+                    <el-option
+                      v-for="item in tagInfo"
+                      :key="item.id"
+                      :label="item.tag"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
               </el-form>
             </Modal>
@@ -263,10 +278,11 @@ import SideMenu from "./SideMenu";
 
 import {
   addType,
+  setPublish,
   deleteVideo,
   editPicture,
   editVideo,
-
+  getTagList,
   getPersonalVideoByTitle, getTypeList, getVideoByType,
   uploadVideoToServer
 } from "../../api/api";
@@ -329,13 +345,23 @@ export default {
       TypeInfo: {
         typeName:'',
       },
+      tagInfo: {
+        id:'',
+        tag: '',
+      },
       videoUpload:{
         title:'',
         description:'',
         picture:'',
         file:'',
         type:''
-      }
+      },
+      videoPublish:{
+        tag:'',
+        videoId:'',
+        publish:'',
+      },
+      type:this.$route.query.id
     }
   },
   methods: {
@@ -350,16 +376,22 @@ export default {
       this.editPicture()
     },
     ok5(){
-      this.addType()
+      this.setPublish()
     },
-    async addType(){
-      var data = (await (addType(this.TypeInfo.typeName))).data;
+    async setPublish(){
+      this.videoPublish.publish = 1;
+      this.videoPublish.tag = this.tagInfo.id
+      // alert(this.videoUpload.type);
+      var formdata = new FormData();
+      formdata.append('videoId', this.videoPublish.videoId);
+      formdata.append('publish',this.videoPublish.publish);
+      formdata.append('tag',this.videoPublish.tag);
+      var data =(await setPublish(formdata)).data;
       if(data.status===200){
         this.$Message.success(data.msg);
         // this.getAllVideo(1);
-        // alert("添加成功")
       }else{
-        this.$message.error("Fail");
+        this.$message.error("发布失败！");
       }
     },
     async uploadVideo(){
@@ -397,7 +429,30 @@ export default {
       }else{
         this.$message.error("删除失败")}
     },
-
+    publishRow(index,rows) {
+      this.$confirm('发布后你的视频将所有人可见，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.videoPublish.videoId = rows.id
+        // alert(this.videoPublish.videoId)
+        this.modal5 = true
+        this.getTagList();
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消发布'
+        });
+      });
+    },
+    async getTagList(){
+      var data  = (await(getTagList())).data;
+      if(data.status===200){
+        this.tagInfo = data.data.tagList;
+      }else{
+        this.$message.error("删除失败")}
+    },
 
     deleteRow(index,rows) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -429,9 +484,9 @@ export default {
     uploadShow(){
     this.modal3 = true
     },
-    typeShow(){
-      this.modal5 = true
-    },
+    // typeShow(){
+    //   this.modal5 = true
+    // },
     // editShow(){
     //   // alert("hahah")
     //   this.modal4 = true
@@ -494,6 +549,16 @@ export default {
         this.total = data.data.total;
       }
     },
+    async getVideoByType(val,type){
+      if(val){
+        this.curPage = val;
+      }
+      var data = (await (getVideoByType('',type,this.curPage,this.pageSize))).data;
+      if(data.status === 200){
+        this.tableData = data.data.videoList;
+        this.total = data.data.total;
+      }
+    },
     async getTypeList(){
       var data = (await (getTypeList())).data;
       if(data.status === 200){
@@ -501,18 +566,49 @@ export default {
         this.typeList = data.data.typeList;
 
       }
-    }
+    },
+
   },
 
   beforeRemove(file, fileList) {
     return this.$confirm(`确定移除 ${ file.name }？`);
   },
+  watch: {
+    // 监视搜索词变化
+    "$route.query.id": {
+      immediate: true,
+      handler() {
+        // this.getAllVideo()
+        this.type = this.$route.query.id
+        if(this.type){
+          //如果type有值，调用getVideoByType
+          // alert(this.type)
+          this.getVideoByType(1,this.type)
+        }else{
+          // alert("调用AllVideo方法")
+          this.getAllVideo();
+          // this.type.clear()
+        }
+      },
+    },
+  },
+
+
   mounted() {
     this.username = localStorage.getItem("username");
-    //获取视频列表
-    this.getAllVideo();
+    this.type = this.$route.query.id
+    if(this.type){
+      //如果type有值，调用getVideoByType
+      // alert(this.type)
+      this.getVideoByType(1,this.type)
+    }else{
+      // alert("调用AllVideo方法")
+      this.getAllVideo();
+      // this.type.clear()
+    }
     //获取分类
     this.getTypeList();
+    // alert(this.type)
 
   }
 }

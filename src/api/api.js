@@ -82,6 +82,11 @@ export function uploadVideoToServer(params){
       'Content-Type': 'multipart/form-data'}
   })
 }
+export function setPublish(params){
+  return axios.post('/v1/setPublish',params,{ headers: {
+      'Content-Type': 'multipart/form-data'}
+  })
+}
 
 //获取登录用户的视频分类
 export function getTypeList(){
