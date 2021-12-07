@@ -17,8 +17,8 @@
 <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
 <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
           <template>
-            <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>
-            <MenuItem v-for="item in menuList" :key="item.id" :value="item.id" @click.native.prevent="insurance(item.id)">
+            <MenuItem name="2-0" to="/VideoManage">全部</MenuItem>
+            <MenuItem v-for="item in menuList" :key="item.id" :value="item.id" :name="'2'+item.id" @click.native.prevent="insurance(item.id)">
               {{ item.type }}
             </MenuItem>
           </template>
