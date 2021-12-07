@@ -18,7 +18,7 @@
 
       </el-breadcrumb>
       <Row type="flex" justify="left" align="top" class="code-row-bg" style="margin-top: 20px">
-        <Col span="16" >
+        <Col span="17" >
           <video-player   class="video-player vjs-custom-skin"
                           ref="videoPlayer" :options="playerOptions" :playsinline="true"
                           customEventName="customstatechangedeventname"
@@ -28,7 +28,7 @@
           >
           </video-player>
         </Col>
-        <Col span="7" offset="1" style="text-align: left">
+        <Col span="6" offset="1" style="text-align: left">
           <h2>
             {{videoInfo.title}}
           </h2>

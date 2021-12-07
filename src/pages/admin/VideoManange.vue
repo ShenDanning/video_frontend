@@ -64,6 +64,17 @@
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
+                align="center"
+                label="是否已发布"
+                width="180"
+                show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <el-tag size="medium" v-if="scope.row.publish =='1'">已发布</el-tag>
+                  <el-tag size="medium" v-else>未发布</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
                 label="分类"
                 width="180">
                 <template slot-scope="scope">
@@ -80,7 +91,7 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="180"
+                width="200"
                 align="center"
               >
                 <template slot-scope="scope">
@@ -108,6 +119,13 @@
                     size="small">
                     发布
                   </el-button>
+<!--                  <el-button-->
+<!--                    v-else-->
+<!--                    @click.native.prevent="cancelPublishRow(scope.$index,scope.row)"-->
+<!--                    type="text"-->
+<!--                    size="small">-->
+<!--                    取消发布-->
+<!--                  </el-button>-->
                 </template>
               </el-table-column>
             </el-table>
@@ -150,8 +168,10 @@
             <Modal
               v-model="modal2"
               title="视频预览"
-              @on-cancel="cancel">
-              <video style="width: 475px" :src="videoInfo.url" controls='controls' autoplay>
+              @on-cancel="cancel1"
+              @on-ok = "cancel1"
+            >
+              <video style="width: 475px" :src="videoInfo.url" ref="vueMiniPlayer" controls='controls' autoplay>
               </video>
             </Modal>
             <Modal
@@ -175,7 +195,10 @@
                       :value="item.id">
                     </el-option>
                   </el-select>
+                  <el-link icon="el-icon-plus" style="float: right" @click.native.prevent="typeShow()">没有分类？点击添加！</el-link>
+
                 </el-form-item>
+
 <!--                <el-form-item label="视频分类">-->
 <!--                  <el-select v-model="videoUpload.type" placeholder="请选择"-->
 <!--                             filterable-->
@@ -261,6 +284,17 @@
                 </el-form-item>
               </el-form>
             </Modal>
+            <Modal
+              v-model="modal6"
+              title="添加分类"
+              @on-ok="ok6"
+              @on-cancel="cancel">
+              <el-form label-position="left" label-width="80px" :model="TypeInfo">
+                <el-form-item label="分类名">
+                  <el-input v-model="typeInfo.typeName"></el-input>
+                </el-form-item>
+              </el-form>
+            </Modal>
           </Content>
         </Layout>
       </Layout>
@@ -298,6 +332,7 @@ export default {
       modal3: false,
       modal4:false,
       modal5:false,
+      modal6:false,
       username:'',
       curPage:1,
       pageSize:10,
@@ -332,7 +367,8 @@ export default {
         picture: '图片url',
         uploadTime: '2021-11-20',
         description: '这是一个视频',
-        author: '管理员'
+        author: '管理员',
+        publish:'0',
       }],
       videoInfo: {
         id:'',
@@ -348,6 +384,10 @@ export default {
       tagInfo: {
         id:'',
         tag: '',
+      },
+      typeInfo:{
+        typeName:'',
+        typeId:'',
       },
       videoUpload:{
         title:'',
@@ -365,6 +405,14 @@ export default {
     }
   },
   methods: {
+    cancel1(){
+      this.$refs.vueMiniPlayer.pause();
+      // this.videoInfo.url.clear()
+      this.$Message.info('Clicked cancel');
+    },
+    typeShow() {
+      this.modal6 = true;
+    },
     ok () {
       this.editRow();
       console.log(this.videoInfo);
@@ -377,6 +425,19 @@ export default {
     },
     ok5(){
       this.setPublish()
+    },
+    ok6(){
+      this.addType()
+    },
+    async addType(){
+      var data = (await (addType(this.typeInfo.typeName))).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        await this.getTypeList();
+        // alert("添加成功")
+      }else{
+        this.$message.error("Fail");
+      }
     },
     async setPublish(){
       this.videoPublish.publish = 1;
@@ -394,6 +455,22 @@ export default {
         this.$message.error("发布失败！");
       }
     },
+    async undoSetPublish(){
+      this.videoPublish.publish = 0;
+      this.videoPublish.tag = this.tagInfo.id
+      // alert(this.videoUpload.type);
+      var formdata = new FormData();
+      formdata.append('videoId', this.videoPublish.videoId);
+      formdata.append('publish',this.videoPublish.publish);
+      formdata.append('tag',this.videoPublish.tag);
+      var data =(await setPublish(formdata)).data;
+      if(data.status===200){
+        this.$Message.success("取消发布成功");
+        // this.getAllVideo(1);
+      }else{
+        this.$message.error("取消发布失败");
+      }
+    },
     async uploadVideo(){
      // alert(this.videoUpload.type);
       var formdata = new FormData();
@@ -405,7 +482,7 @@ export default {
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
         this.$Message.success(data.msg);
-        this.getAllVideo(1);
+        await this.getAllVideo(1);
       }else{
         this.$message.error("Fail");
       }
@@ -446,6 +523,23 @@ export default {
         });
       });
     },
+    // cancelPublishRow(index,rows) {
+    //   this.$confirm('取消后你的视频将仅自己可见，是否继续?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
+    //     this.videoPublish.videoId = rows.id
+    //     this.videoPublish.tag = this.tagInfo.id
+    //     // this.getTagList();
+    //     this.undoSetPublish()
+    //   }).catch(() => {
+    //     this.$message({
+    //       type: 'info',
+    //       message: '已发布'
+    //     });
+    //   });
+    // },
     async getTagList(){
       var data  = (await(getTagList())).data;
       if(data.status===200){
