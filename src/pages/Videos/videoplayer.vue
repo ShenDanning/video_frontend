@@ -17,7 +17,7 @@
         <el-breadcrumb-item>视频播放</el-breadcrumb-item>
 
       </el-breadcrumb>
-      <Row type="flex" justify="left" align="top" class="code-row-bg" style="margin-top: 20px">
+      <Row type="flex"  align="top" class="code-row-bg" style="margin-top: 20px">
         <Col span="17" >
           <video-player   class="video-player vjs-custom-skin"
                           ref="videoPlayer" :options="playerOptions" :playsinline="true"

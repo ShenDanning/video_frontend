@@ -51,12 +51,7 @@
                   <img :src="scope.row.picture" style="height:40px" @click="getRow(scope.$index,scope.row,4)">
                 </template>
               </el-table-column>
-              <el-table-column
-                prop="uploadTime"
-                label="上传时间"
-                :formatter="dateFormat"
-                width="150">
-              </el-table-column>
+
               <el-table-column
                 prop="description"
                 label="简介"
@@ -68,11 +63,24 @@
                 label="是否已发布"
                 width="180"
                 show-overflow-tooltip>
+<!--                <template slot-scope="scope">-->
+<!--                  <el-tag size="medium" v-if="scope.row.publish =='1'">已发布</el-tag>-->
+<!--                  <el-tag size="medium" v-else>未发布</el-tag>-->
+<!--                </template>-->
                 <template slot-scope="scope">
-                  <el-tag size="medium" v-if="scope.row.publish =='1'">已发布</el-tag>
-                  <el-tag size="medium" v-else>未发布</el-tag>
+
+                  <el-switch
+                    v-model="scope.row.publish"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    :active-value="1"
+                    :inactive-value="0"
+                    @change="changeSwitch(scope.row,scope.$index)"
+                  >
+                  </el-switch>
                 </template>
               </el-table-column>
+
               <el-table-column
                 align="center"
                 label="分类"
@@ -87,6 +95,12 @@
                 prop="author"
                 label="上传者"
                 width="100">
+              </el-table-column>
+              <el-table-column
+                prop="uploadTime"
+                label="上传时间"
+                :formatter="dateFormat"
+                width="150">
               </el-table-column>
               <el-table-column
                 fixed="right"
@@ -401,7 +415,8 @@ export default {
         videoId:'',
         publish:'',
       },
-      type:this.$route.query.id
+      type:this.$route.query.id,
+      value:true
     }
   },
   methods: {
@@ -429,6 +444,16 @@ export default {
     ok6(){
       this.addType()
     },
+    changeSwitch(row,index){
+
+      if(row.publish===0){
+        this.undoSetPublish(row);
+       // location.reload();x
+      }else{
+       this.publishRow(index,row)
+      }
+
+    },
     async addType(){
       var data = (await (addType(this.typeInfo.typeName))).data;
       if(data.status===200){
@@ -455,14 +480,12 @@ export default {
         this.$message.error("发布失败！");
       }
     },
-    async undoSetPublish(){
-      this.videoPublish.publish = 0;
-      this.videoPublish.tag = this.tagInfo.id
+    async undoSetPublish(row){
       // alert(this.videoUpload.type);
       var formdata = new FormData();
-      formdata.append('videoId', this.videoPublish.videoId);
-      formdata.append('publish',this.videoPublish.publish);
-      formdata.append('tag',this.videoPublish.tag);
+      formdata.append('videoId',row.id);
+      formdata.append('publish',-1);
+      formdata.append('tag',-1);
       var data =(await setPublish(formdata)).data;
       if(data.status===200){
         this.$Message.success("取消发布成功");
@@ -521,6 +544,7 @@ export default {
           type: 'info',
           message: '已取消发布'
         });
+        location.reload()
       });
     },
     // cancelPublishRow(index,rows) {
@@ -665,8 +689,8 @@ export default {
 
       }
     },
-
   },
+
 
   beforeRemove(file, fileList) {
     return this.$confirm(`确定移除 ${ file.name }？`);
