@@ -9,7 +9,7 @@ import Login from "../pages/admin/Login";
 import Home from "../pages/home/Home";
 import videoSquare from "../pages/Videos/videoSquare";
 import TypeManage from "../pages/admin/TypeManage";
-
+// import demo from "../pages/admin/demo"
 Vue.use(Router)
 
 export default new Router({
@@ -67,6 +67,7 @@ export default new Router({
       name:'Home',
       component:Home
     },
+
 
   ]
 })

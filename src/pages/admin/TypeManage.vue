@@ -18,16 +18,16 @@
               <el-table
                 :data="tableData"
                 style="width: 100%;">
-                <el-table-column
-                  label="分类号"
-                  width="180"
-                  align="center"
-                >
-                  <template slot-scope="scope">
-                    <!--                  <i class="el-icon-time"></i>-->
-                    <span style="margin-left: 10px">{{ scope.row.id }}</span>
-                  </template>
-                </el-table-column>
+<!--                <el-table-column-->
+<!--                  label="分类号"-->
+<!--                  width="180"-->
+<!--                  align="center"-->
+<!--                >-->
+<!--                  <template slot-scope="scope">-->
+<!--                    &lt;!&ndash;                  <i class="el-icon-time"></i>&ndash;&gt;-->
+<!--                    <span style="margin-left: 10px">{{ scope.row.id }}</span>-->
+<!--                  </template>-->
+<!--                </el-table-column>-->
                 <el-table-column
                   label="分类名"
                   width="180"
