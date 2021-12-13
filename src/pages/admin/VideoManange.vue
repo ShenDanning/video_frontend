@@ -441,6 +441,12 @@ export default {
     }
   },
   methods: {
+    loading () {
+      const msg = this.$Message.loading({
+        content: '正在上传',
+        duration: 0
+      });
+    },
     cancel1(){
       this.$refs.vueMiniPlayer.pause();
       // this.videoInfo.url.clear()
@@ -523,10 +529,13 @@ export default {
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
+      this.loading();
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
+        this.$Message.destroy();
         this.$Message.success(data.msg);
-        await this.getAllVideo(1);
+        this.getAllVideo(1);
+
       }else{
         this.$message.error("Fail");
       }
