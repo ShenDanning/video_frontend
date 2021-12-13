@@ -513,7 +513,7 @@ export default {
       if(data.status===200){
         this.$Message.destroy();
         this.$Message.success(data.msg);
-        await this.getAllVideo(1);
+        this.getAllVideo(1);
 
       }else{
         this.$message.error("Fail");
