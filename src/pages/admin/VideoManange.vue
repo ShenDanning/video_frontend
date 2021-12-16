@@ -1,21 +1,21 @@
 <template>
   <div class="layout">
-    <Layout :style="back">
+    <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0'}">
+        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
           <SideMenu/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Content :style="{padding: '24px',margin: '88px 0 0', minHeight: '280px', background: '#fff'}">
+          <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
             <Row>
               <Col span="24">
                 <Button type="primary"  icon="md-add" style="float: left"
                         @click.native.prevent="uploadShow()"
                 >上传视频</Button>
-<!--                  <Button type="primary"  icon="ios-construct" style="float: left;margin-left: 20px"-->
-<!--                          @click.native.prevent="typeShow()"-->
-<!--                  >管理分类</Button>-->
+                <!--                  <Button type="primary"  icon="ios-construct" style="float: left;margin-left: 20px"-->
+                <!--                          @click.native.prevent="typeShow()"-->
+                <!--                  >管理分类</Button>-->
                 <Input
                   v-model="searchTitle"
                   :search="true"
@@ -30,17 +30,18 @@
               :data="tableData"
               style="width: 100%;margin-top: 10px"
             >
+              <!--              <el-table-column-->
+              <!--                fixed-->
+              <!--                prop="fileName"-->
+              <!--                label="文件名"-->
+              <!--                width="150"-->
+              <!--                show-overflow-tooltip>-->
+              <!--              </el-table-column>-->
               <el-table-column
                 fixed
-                prop="fileName"
-                label="文件名"
-                width="150"
-                show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
                 prop="title"
                 label="标题"
-                width="200"
+                width="160"
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
@@ -52,21 +53,21 @@
                 </template>
               </el-table-column>
 
-              <el-table-column
-                prop="description"
-                label="简介"
-                width="300"
-                show-overflow-tooltip>
-              </el-table-column>
+              <!--              <el-table-column-->
+              <!--                prop="description"-->
+              <!--                label="简介"-->
+              <!--                width="300"-->
+              <!--                show-overflow-tooltip>-->
+              <!--              </el-table-column>-->
               <el-table-column
                 align="center"
                 label="是否已发布"
                 width="180"
                 show-overflow-tooltip>
-<!--                <template slot-scope="scope">-->
-<!--                  <el-tag size="medium" v-if="scope.row.publish =='1'">已发布</el-tag>-->
-<!--                  <el-tag size="medium" v-else>未发布</el-tag>-->
-<!--                </template>-->
+                <!--                <template slot-scope="scope">-->
+                <!--                  <el-tag size="medium" v-if="scope.row.publish =='1'">已发布</el-tag>-->
+                <!--                  <el-tag size="medium" v-else>未发布</el-tag>-->
+                <!--                </template>-->
                 <template slot-scope="scope">
 
                   <el-switch
@@ -86,9 +87,9 @@
                 label="分类"
                 width="180">
                 <template slot-scope="scope">
-                    <div slot="reference" class="name-wrapper">
-                      <el-tag size="medium">{{ scope.row.type }}</el-tag>
-                    </div>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">{{ scope.row.type }}</el-tag>
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column
@@ -100,6 +101,7 @@
                 prop="uploadTime"
                 label="上传时间"
                 :formatter="dateFormat"
+                align="center"
                 width="150">
               </el-table-column>
               <el-table-column
@@ -127,19 +129,19 @@
                     size="small">
                     预览
                   </el-button>
-                  <el-button
-                    @click.native.prevent="publishRow(scope.$index,scope.row)"
-                    type="text"
-                    size="small">
-                    发布
-                  </el-button>
-<!--                  <el-button-->
-<!--                    v-else-->
-<!--                    @click.native.prevent="cancelPublishRow(scope.$index,scope.row)"-->
-<!--                    type="text"-->
-<!--                    size="small">-->
-<!--                    取消发布-->
-<!--                  </el-button>-->
+                  <!--                  <el-button-->
+                  <!--                    @click.native.prevent="publishRow(scope.$index,scope.row)"-->
+                  <!--                    type="text"-->
+                  <!--                    size="small">-->
+                  <!--                    发布-->
+                  <!--                  </el-button>-->
+                  <!--                  <el-button-->
+                  <!--                    v-else-->
+                  <!--                    @click.native.prevent="cancelPublishRow(scope.$index,scope.row)"-->
+                  <!--                    type="text"-->
+                  <!--                    size="small">-->
+                  <!--                    取消发布-->
+                  <!--                  </el-button>-->
                 </template>
               </el-table-column>
             </el-table>
@@ -161,11 +163,27 @@
               @on-ok="ok"
               @on-cancel="cancel">
               <el-form label-position="left" label-width="80px" :model="videoInfo">
+                <!--                <template slot-scope="scope">-->
                 <el-form-item label="视频标题">
-                  <el-input v-model="videoInfo.title"></el-input>
+                  <el-input v-model="videoInfo.title" :placeholder="videoInfo.title"></el-input>
                 </el-form-item>
                 <el-form-item label="视频简介">
                   <el-input  type="textarea" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoInfo.description"></el-input>
+                </el-form-item>
+                <el-form-item label="视频封面">
+                  <el-upload
+                    class="upload-demo"
+                    drag
+                    action="#"
+                    multiple
+                    :limit="1"
+                    :http-request="imgAdd"
+                    v-model="videoInfo.picture"
+                  >
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上传图片文件</div>
+                  </el-upload>
                 </el-form-item>
                 <el-form-item label="视频分类">
                   <el-select v-model="videoInfo.type" placeholder="请选择">
@@ -177,6 +195,7 @@
                     </el-option>
                   </el-select>
                 </el-form-item>
+                <!--                </template>-->
               </el-form>
             </Modal>
             <Modal
@@ -191,7 +210,7 @@
             <Modal
               v-model="modal3"
               title="视频上传"
-              @on-ok="ok3"
+              @on-ok="submitUpload"
               @on-cancel="cancel">
               <el-form label-position="left" label-width="80px" :model="videoUpload">
                 <el-form-item label="视频标题">
@@ -200,6 +219,8 @@
                 <el-form-item label="视频简介">
                   <el-input  type="textarea" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoUpload.description"></el-input>
                 </el-form-item>
+
+
                 <el-form-item label="视频分类">
                   <el-select v-model="videoUpload.type" placeholder="请选择">
                     <el-option
@@ -213,71 +234,89 @@
 
                 </el-form-item>
 
-<!--                <el-form-item label="视频分类">-->
-<!--                  <el-select v-model="videoUpload.type" placeholder="请选择"-->
-<!--                             filterable-->
-<!--                             allow-create-->
-<!--                             default-first-option>-->
-<!--                    <el-option-->
-<!--                      v-for="item in typeList"-->
-<!--                      :key="item.id"-->
-<!--                      :label="item.type"-->
-<!--                      :value="item.id">-->
-<!--                    </el-option>-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="是否公开">-->
-<!--                  <el-radio v-model="radio" label="1">公开</el-radio>-->
-<!--                  <el-radio v-model="radio" label="2">保密</el-radio>-->
-<!--                </el-form-item>-->
+                <!--                <el-form-item label="视频分类">-->
+                <!--                  <el-select v-model="videoUpload.type" placeholder="请选择"-->
+                <!--                             filterable-->
+                <!--                             allow-create-->
+                <!--                             default-first-option>-->
+                <!--                    <el-option-->
+                <!--                      v-for="item in typeList"-->
+                <!--                      :key="item.id"-->
+                <!--                      :label="item.type"-->
+                <!--                      :value="item.id">-->
+                <!--                    </el-option>-->
+                <!--                  </el-select>-->
+                <!--                </el-form-item>-->
+                <!--                <el-form-item label="是否公开">-->
+                <!--                  <el-radio v-model="radio" label="1">公开</el-radio>-->
+                <!--                  <el-radio v-model="radio" label="2">保密</el-radio>-->
+                <!--                </el-form-item>-->
                 <el-form-item label="视频封面">
                   <el-upload
-                  class="upload-demo"
-                  action="#"
-                  multiple
-                  :http-request="imgAdd"
-                  :limit="1"
+                    class="upload-demo"
+                    action="#"
+                    multiple
+                    :http-request="imgAdd"
+                    :limit="1"
                   >
                     <el-button size="small" type="primary">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                   </el-upload>
                 </el-form-item>
                 <el-form-item label="视频">
+<!--                  <el-upload-->
+<!--                    class="upload-demo"-->
+<!--                    drag-->
+<!--                    action="#"-->
+<!--                    multiple-->
+<!--                    :limit="1"-->
+<!--                    :http-request="videoAdd"-->
+<!--                  >-->
+<!--                    <i class="el-icon-upload"></i>-->
+<!--                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>-->
+<!--                    <div class="el-upload__tip" slot="tip">只能上传mp4文件</div>-->
+<!--                  </el-upload>-->
                   <el-upload
+                    ref="upload"
                     class="upload-demo"
+                    :before-upload="beforeUpload"
                     drag
                     action="#"
-                    multiple
-                    :limit="1"
-                    :http-request="videoAdd"
+                    :auto-upload="false"
+                    :on-exceed="handleExceed"
                   >
                     <i class="el-icon-upload"></i>
-                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                    <div class="el-upload__tip" slot="tip">只能上传mp4文件</div>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
                   </el-upload>
+
                 </el-form-item>
               </el-form>
             </Modal>
+            <div class="loading" v-if="loading" >
+              <h4 class="tips">{{tips}}</h4>
+              <!--进度条-->
+              <el-progress type="line" :percentage="percentage" class="progress" :show-text="true"></el-progress>
+            </div>
             <Modal
               v-model="modal4"
               title="编辑视频"
               @on-ok="ok4"
               @on-cancel="cancel">
               <el-form label-position="left" label-width="80px" :model="videoInfo">
-                                <el-form-item label="视频封面">
-                                  <el-upload
-                                    class="upload-demo"
-                                    drag
-                                    action="#"
-                                    multiple
-                                    :limit="1"
-                                    :http-request="imgAdd"
-                                  >
-                                    <i class="el-icon-upload"></i>
-                                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                                    <div class="el-upload__tip" slot="tip">只能上传图片文件</div>
-                                  </el-upload>
-                                </el-form-item>
+                <el-form-item label="视频封面">
+                  <el-upload
+                    class="upload-demo"
+                    drag
+                    action="#"
+                    multiple
+                    :limit="1"
+                    :http-request="imgAdd"
+                  >
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上传图片文件</div>
+                  </el-upload>
+                </el-form-item>
               </el-form>
             </Modal>
             <Modal
@@ -340,6 +379,11 @@ export default {
   //components:{ Menu},
   data(){
     return{
+      loading:false,
+      percentage:0,
+      tips:'',
+      //dialogVisible:false,
+      url:"http://10.10.22.106/v1/uploadVideo",
       radio:'1',
       modal1: false,
       modal2:false,
@@ -349,7 +393,7 @@ export default {
       modal6:false,
       username:'',
       curPage:1,
-      pageSize:10,
+      pageSize:8,
       total:0,
       searchTitle:'',
       typeList:[{
@@ -368,12 +412,6 @@ export default {
         value: '选项5',
         label: '北京烤鸭'
       }],
-      back: {
-        backgroundSize: "100% 100%",
-        height: "100%",
-        position: "fixed",
-        width: "100%",
-      },
       tableData: [{
         id:1,
         fileName: 'text1',
@@ -420,6 +458,56 @@ export default {
     }
   },
   methods: {
+    async beforeUpload(file){
+      this.videoUpload.file = file;
+      let formdata = new FormData();
+      formdata.append('file', this.videoUpload.file);
+      formdata.append('title',this.videoUpload.title);
+      formdata.append('description',this.videoUpload.description);
+      formdata.append('picture',this.videoUpload.picture.file);
+      formdata.append('typeId',this.videoUpload.type);
+      let config = {
+        onUploadProgress: progressEvent => {
+          //progressEvent.loaded:已上传文件大小
+          //progressEvent.total:被上传文件的总大小
+          let complete = (progressEvent.loaded / progressEvent.total ).toFixed(2) * 100 ;
+          this.percentage = complete;
+          if (this.percentage >= 100){
+            this.loading = false
+          }
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      var data =(await uploadVideoToServer(formdata,config)).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        this.getAllVideo(1);
+      }else{
+        this.$message.error("Fail");
+      }
+
+
+    },
+    handleExceed(){
+
+    },
+    submitUpload(){
+      this.loading = true;
+      this.tips = '正在上传中。。。';
+      this.$refs.upload.submit();
+    },
+    ensure(){
+      this.dialogVisible = false;
+      this.loading = false;
+    },
+    loading1 () {
+      const msg = this.$Message.loading({
+        content: '正在上传',
+        duration: 0
+      });
+    },
     cancel1(){
       this.$refs.vueMiniPlayer.pause();
       // this.videoInfo.url.clear()
@@ -448,9 +536,9 @@ export default {
 
       if(row.publish===0){
         this.undoSetPublish(row);
-       // location.reload();x
+        // location.reload();x
       }else{
-       this.publishRow(index,row)
+        this.publishRow(index,row)
       }
 
     },
@@ -495,17 +583,19 @@ export default {
       }
     },
     async uploadVideo(){
-     // alert(this.videoUpload.type);
+      // alert(this.videoUpload.type);
       var formdata = new FormData();
       formdata.append('file', this.videoUpload.file.file);
       formdata.append('title',this.videoUpload.title);
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
+      this.loading1();
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
+        this.$Message.destroy();
         this.$Message.success(data.msg);
-        await this.getAllVideo(1);
+        this.getAllVideo(1);
       }else{
         this.$message.error("Fail");
       }
@@ -519,13 +609,14 @@ export default {
       if (date == undefined) {
         return "";
       }
-      return moment(date).format("YYYY-MM-DD HH:mm:ss");
+      return moment(date).format("YYYY-MM-DD HH:mm");
     },
 
     async deleteVideo(videoId){
       var data  = (await(deleteVideo(videoId))).data;
       if(data.status===200){
         this.$message.success("删除成功")
+        this.getAllVideo(1)
       }else{
         this.$message.error("删除失败")}
     },
@@ -600,7 +691,7 @@ export default {
 
     },
     uploadShow(){
-       this.modal3 = true
+      this.modal3 = true
 
     },
     // typeShow(){
@@ -615,6 +706,10 @@ export default {
       if(val===1){
         this.modal1=true;
         this.videoInfo.id=rows.id;
+        this.videoInfo.title = rows.title;
+        this.videoInfo.description = rows.description;
+        this.videoInfo.picture = rows.picture;
+        // this.videoInfo.type = rows.type;
       }else if(val===2){
         this.modal2=true;
         this.videoInfo.id=rows.id;
@@ -640,8 +735,11 @@ export default {
 
     async editRow(){
       var formdata = new FormData();
-       //alert(this.videoInfo.type);
-      // formdata.append('file', this.videoInfo.picture.file);
+      //alert(this.videoInfo.type);
+
+      if(this.videoInfo.picture.file!=null){
+        this.editPicture()
+      }
       formdata.append('title',this.videoInfo.title);
       formdata.append('description',this.videoInfo.description);
       formdata.append('videoId',this.videoInfo.id);
@@ -668,6 +766,7 @@ export default {
       var data = (await (getPersonalVideoByTitle(this.searchTitle,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.tableData = data.data.videoList;
+        // this.videoInfo = data.data.videoList;
         this.total = data.data.total;
       }
     },
@@ -678,6 +777,7 @@ export default {
       var data = (await (getVideoByType('',type,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.tableData = data.data.videoList;
+        // this.videoInfo = data.data.videoList;
         this.total = data.data.total;
       }
     },
@@ -744,5 +844,41 @@ export default {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+}
+.uploadfile{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -100px;
+}
+.loading{
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: black;
+  opacity: 0.8;
+  z-index: 4;
+}
+.progress{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -100px;
+}
+.tips{
+  color: #409eff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -150px;
 }
 </style>

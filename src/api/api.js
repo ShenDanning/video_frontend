@@ -77,10 +77,9 @@ export function editType(params){
   })
 }
 
-export function uploadVideoToServer(params){
-  return axios.post('/v1/uploadVideo',params,{ headers: {
-      'Content-Type': 'multipart/form-data'}
-  })
+export function uploadVideoToServer(params,config){
+  return axios.post('/v1/uploadVideo',params,config
+  )
 }
 export function setPublish(params){
   return axios.post('/v1/setPublish',params,{ headers: {

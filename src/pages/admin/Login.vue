@@ -30,6 +30,7 @@ export default {
         localStorage.setItem("collegeId", data.data.collegeId);
         localStorage.setItem("collegeName", data.data.collegeName);
         localStorage.setItem("username", data.data.name);
+        localStorage.setItem("userId", data.data.userId);
           this.$router.push('/VideoManage');
 
 
@@ -70,20 +71,20 @@ export default {
       } else if (logout === "comfirm") {
           localStorage.removeItem("logout");
           window.location.href =
-              "https://oauth.shu.edu.cn/oauth/logout?redirect_uri=" +"http://127.0.0.1:8080/login" ;
+              "https://oauth.shu.edu.cn/oauth/logout?redirect_uri=" +"http://10.10.22.106/video" ;
 
       } else {
           var code = this.getQueryVariable("code");
           console.log(code);
           if (code) {
              // alert(document.location.href.split("?")[0]);
-              this.handleOnClickLogin(code,"http://127.0.0.1:8080/login");
+              this.handleOnClickLogin(code,"http://10.10.22.106/video");
           } else {
               // 请求code
             // alert("重新请求")
               document.location.href =
                   "http://oauth.shu.edu.cn/oauth/authorize?response_type=code&client_id=Tp8uecHJi00aHlpufk8Fqp2A_2zpaKzS" +
-                  "&redirect_uri=http://127.0.0.1:8080/login" +
+                  "&redirect_uri=http://10.10.22.106/video" +
                   "&scope=1";
              //获取token
       }
