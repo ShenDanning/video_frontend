@@ -498,6 +498,7 @@ export default {
           this.percentage = complete;
           if (this.percentage >= 100){
             this.loading = false
+            this.loading1()
           }
         },
         headers: {
@@ -506,6 +507,7 @@ export default {
       };
       var data =(await uploadVideoToServer(formdata,config)).data;
       if(data.status===200){
+        this.$Message.destroy();
         this.$Message.success(data.msg);
         this.getAllVideo(1);
 
@@ -538,7 +540,7 @@ export default {
     },
     loading1 () {
       const msg = this.$Message.loading({
-        content: '正在上传',
+        content: '请稍等',
         duration: 0
       });
     },
