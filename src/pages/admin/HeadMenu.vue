@@ -36,7 +36,7 @@
             <a @click="logout">注销</a>
 
           </MenuItem>
-          <MenuItem name="5" to="Control" style="float: right">
+          <MenuItem name="5" disabled style="float: right">
 
             欢迎 {{username}}！
 
