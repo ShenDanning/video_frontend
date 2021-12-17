@@ -1,13 +1,13 @@
 <template>
   <div class="layout">
-    <Layout :style="back">
+    <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0'}">
+        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
           <SideMenu/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Content :style="{padding: '24px',margin: '88px 0 0', minHeight: '280px', background: '#fff'}">
+          <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
             <Row>
               <Col span="24">
                 <Button type="primary"  icon="md-add" style="float: left"
@@ -210,7 +210,7 @@
             <Modal
               v-model="modal3"
               title="视频上传"
-              @on-ok="ok3"
+              @on-ok="submitUpload"
               @on-cancel="cancel">
               <el-form label-position="left" label-width="80px" :model="videoUpload">
                 <el-form-item label="视频标题">
@@ -264,21 +264,39 @@
                   </el-upload>
                 </el-form-item>
                 <el-form-item label="视频">
+<!--                  <el-upload-->
+<!--                    class="upload-demo"-->
+<!--                    drag-->
+<!--                    action="#"-->
+<!--                    multiple-->
+<!--                    :limit="1"-->
+<!--                    :http-request="videoAdd"-->
+<!--                  >-->
+<!--                    <i class="el-icon-upload"></i>-->
+<!--                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>-->
+<!--                    <div class="el-upload__tip" slot="tip">只能上传mp4文件</div>-->
+<!--                  </el-upload>-->
                   <el-upload
+                    ref="upload"
                     class="upload-demo"
+                    :before-upload="beforeUpload"
                     drag
                     action="#"
-                    multiple
-                    :limit="1"
-                    :http-request="videoAdd"
+                    :auto-upload="false"
+                    :on-exceed="handleExceed"
                   >
                     <i class="el-icon-upload"></i>
-                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                    <div class="el-upload__tip" slot="tip">只能上传mp4文件</div>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
                   </el-upload>
+
                 </el-form-item>
               </el-form>
             </Modal>
+            <div class="loading" v-if="loading" >
+              <h4 class="tips">{{tips}}</h4>
+              <!--进度条-->
+              <el-progress type="line" :percentage="percentage" class="progress" :show-text="true"></el-progress>
+            </div>
             <Modal
               v-model="modal4"
               title="编辑视频"
@@ -361,6 +379,11 @@ export default {
   //components:{ Menu},
   data(){
     return{
+      loading:false,
+      percentage:0,
+      tips:'',
+      //dialogVisible:false,
+      url:"http://10.10.22.106/v1/uploadVideo",
       radio:'1',
       modal1: false,
       modal2:false,
@@ -370,7 +393,7 @@ export default {
       modal6:false,
       username:'',
       curPage:1,
-      pageSize:10,
+      pageSize:8,
       total:0,
       searchTitle:'',
       typeList:[{
@@ -389,12 +412,6 @@ export default {
         value: '选项5',
         label: '北京烤鸭'
       }],
-      back: {
-        backgroundSize: "100% 100%",
-        height: "100%",
-        position: "fixed",
-        width: "100%",
-      },
       tableData: [{
         id:1,
         fileName: 'text1',
@@ -441,7 +458,51 @@ export default {
     }
   },
   methods: {
-    loading () {
+    async beforeUpload(file){
+      this.videoUpload.file = file;
+      let formdata = new FormData();
+      formdata.append('file', this.videoUpload.file);
+      formdata.append('title',this.videoUpload.title);
+      formdata.append('description',this.videoUpload.description);
+      formdata.append('picture',this.videoUpload.picture.file);
+      formdata.append('typeId',this.videoUpload.type);
+      let config = {
+        onUploadProgress: progressEvent => {
+          //progressEvent.loaded:已上传文件大小
+          //progressEvent.total:被上传文件的总大小
+          let complete = (progressEvent.loaded / progressEvent.total ).toFixed(2) * 100 ;
+          this.percentage = complete;
+          if (this.percentage >= 100){
+            this.loading = false
+          }
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      var data =(await uploadVideoToServer(formdata,config)).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        this.getAllVideo(1);
+      }else{
+        this.$message.error("Fail");
+      }
+
+
+    },
+    handleExceed(){
+
+    },
+    submitUpload(){
+      this.loading = true;
+      this.tips = '正在上传中。。。';
+      this.$refs.upload.submit();
+    },
+    ensure(){
+      this.dialogVisible = false;
+      this.loading = false;
+    },
+    loading1 () {
       const msg = this.$Message.loading({
         content: '正在上传',
         duration: 0
@@ -529,13 +590,12 @@ export default {
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
-      this.loading();
+      this.loading1();
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
         this.$Message.destroy();
         this.$Message.success(data.msg);
         this.getAllVideo(1);
-
       }else{
         this.$message.error("Fail");
       }
@@ -556,6 +616,7 @@ export default {
       var data  = (await(deleteVideo(videoId))).data;
       if(data.status===200){
         this.$message.success("删除成功")
+        this.getAllVideo(1)
       }else{
         this.$message.error("删除失败")}
     },
@@ -675,7 +736,10 @@ export default {
     async editRow(){
       var formdata = new FormData();
       //alert(this.videoInfo.type);
-      // formdata.append('file', this.videoInfo.picture.file);
+
+      if(this.videoInfo.picture.file!=null){
+        this.editPicture()
+      }
       formdata.append('title',this.videoInfo.title);
       formdata.append('description',this.videoInfo.description);
       formdata.append('videoId',this.videoInfo.id);
@@ -780,5 +844,41 @@ export default {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
+}
+.uploadfile{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -100px;
+}
+.loading{
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: black;
+  opacity: 0.8;
+  z-index: 4;
+}
+.progress{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -100px;
+}
+.tips{
+  color: #409eff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -150px;
 }
 </style>

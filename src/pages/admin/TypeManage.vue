@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <Layout :style="back">
+    <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
         <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
