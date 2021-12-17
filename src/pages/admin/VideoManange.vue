@@ -207,20 +207,19 @@
               <video style="width: 475px" :src="videoInfo.url" ref="vueMiniPlayer" controls='controls' autoplay>
               </video>
             </Modal>
+<!--            上传视频-->
             <Modal
               v-model="modal3"
               title="视频上传"
-              @on-ok="submitUpload"
+              @on-ok="submitUpload('videoUpload')"
               @on-cancel="cancel">
-              <el-form label-position="left" label-width="80px" :model="videoUpload">
-                <el-form-item label="视频标题">
-                  <el-input v-model="videoUpload.title"></el-input>
+              <el-form label-position="left" label-width="80px" :model="videoUpload" :rules="rules" class="demo-ruleForm" ref="videoUpload">
+                <el-form-item label="视频标题" prop="title" >
+                  <el-input v-model="videoUpload.title"   placeholder="请输入内容" ></el-input>
                 </el-form-item>
                 <el-form-item label="视频简介">
-                  <el-input  type="textarea" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoUpload.description"></el-input>
+                  <el-input  type="textarea" placeholder="请输入简介" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoUpload.description"></el-input>
                 </el-form-item>
-
-
                 <el-form-item label="视频分类">
                   <el-select v-model="videoUpload.type" placeholder="请选择">
                     <el-option
@@ -231,7 +230,6 @@
                     </el-option>
                   </el-select>
                   <el-link icon="el-icon-plus" style="float: right" @click.native.prevent="typeShow()">没有分类？点击添加！</el-link>
-
                 </el-form-item>
 
                 <!--                <el-form-item label="视频分类">-->
@@ -251,19 +249,21 @@
                 <!--                  <el-radio v-model="radio" label="1">公开</el-radio>-->
                 <!--                  <el-radio v-model="radio" label="2">保密</el-radio>-->
                 <!--                </el-form-item>-->
-                <el-form-item label="视频封面">
+                <el-form-item label="视频封面" prop="picture">
                   <el-upload
                     class="upload-demo"
                     action="#"
                     multiple
                     :http-request="imgAdd"
                     :limit="1"
+                    accept=".png,.jpg"
+                    v-model="uploadVideo.picture"
                   >
                     <el-button size="small" type="primary">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                   </el-upload>
                 </el-form-item>
-                <el-form-item label="视频">
+                <el-form-item label="视频" prop="file">
 <!--                  <el-upload-->
 <!--                    class="upload-demo"-->
 <!--                    drag-->
@@ -283,10 +283,13 @@
                     drag
                     action="#"
                     :auto-upload="false"
+                    accept=".mp4"
                     :on-exceed="handleExceed"
-                  >
+                    v-model="uploadVideo.file"
+                   >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
+                    <div slot="tip" class="el-upload__tip">只能上传mp4文件，且不超过1000M</div>
                   </el-upload>
 
                 </el-form-item>
@@ -377,7 +380,9 @@ export default {
   name: "VideoManange",
   components: {SideMenu, HeadMenu},
   //components:{ Menu},
+
   data(){
+
     return{
       loading:false,
       percentage:0,
@@ -448,19 +453,38 @@ export default {
         file:'',
         type:''
       },
+      rules: {
+        title: [
+          { required: true, message: '请输入标题', trigger: 'blur' }
+        ],
+        picture: [
+          { required: true,message: '请上传图片',  trigger: 'change' }
+        ],
+
+      },
       videoPublish:{
         tag:'',
         videoId:'',
         publish:'',
       },
       type:this.$route.query.id,
-      value:true
+      value:true,
+      uping:false
     }
   },
   methods: {
     async beforeUpload(file){
+      this.loading = true;
+      this.tips = '正在上传中。。。';
+      this.uping = true;
+      let fileSize = Number(file.size / 1024 / 1024);
+      if (fileSize > 1000) {
+        this.$Message.warning("不能超过1000M")
+      }
+
       this.videoUpload.file = file;
       let formdata = new FormData();
+    //  if(this.videoUpload.file==""||this.videoUpload.title==""||)
       formdata.append('file', this.videoUpload.file);
       formdata.append('title',this.videoUpload.title);
       formdata.append('description',this.videoUpload.description);
@@ -474,6 +498,7 @@ export default {
           this.percentage = complete;
           if (this.percentage >= 100){
             this.loading = false
+            this.loading1()
           }
         },
         headers: {
@@ -482,21 +507,32 @@ export default {
       };
       var data =(await uploadVideoToServer(formdata,config)).data;
       if(data.status===200){
+        this.$Message.destroy();
         this.$Message.success(data.msg);
         this.getAllVideo(1);
+
       }else{
         this.$message.error("Fail");
       }
-
-
     },
     handleExceed(){
 
     },
-    submitUpload(){
-      this.loading = true;
-      this.tips = '正在上传中。。。';
-      this.$refs.upload.submit();
+    submitUpload(formName){
+      //alert(this.videoUpload.file)
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+            this.$refs.upload.submit();
+            if(this.uping===false){
+              this.$Message.warning("请上传视频")
+              this.uping=false;
+            }
+        } else {
+          this.$Message.warning("请填写完整信息")
+
+        }
+      });
+
     },
     ensure(){
       this.dialogVisible = false;
@@ -504,7 +540,7 @@ export default {
     },
     loading1 () {
       const msg = this.$Message.loading({
-        content: '正在上传',
+        content: '请稍等',
         duration: 0
       });
     },
