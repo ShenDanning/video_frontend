@@ -283,13 +283,13 @@
                     drag
                     action="#"
                     :auto-upload="false"
-                    accept=".mp4"
+                    accept=".mp4,.avi"
                     :on-exceed="handleExceed"
                     v-model="uploadVideo.file"
                    >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
-                    <div slot="tip" class="el-upload__tip">只能上传mp4文件，且不超过1000M</div>
+                    <div slot="tip" class="el-upload__tip">只能上传mp4或avi文件，且不超过1000M</div>
                   </el-upload>
 
                 </el-form-item>
