@@ -1,95 +1,25 @@
 <template>
   <div>
-    <!--文件上传入口-->
-    <div class="uploadfile">
-      <el-upload
-        ref="upload"
-        class="upload-demo"
-        :before-upload="beforeUpload"
-        drag
-        :auto-upload="false"
-        :on-exceed="handleExceed"
-      >
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
-      </el-upload>
-      <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传</el-button>
-    </div>
-    <!--遮罩层-->
-    <div class="loading" v-if="loading" >
-      <h4 class="tips">{{tips}}</h4>
-      <!--进度条-->
-      <el-progress type="line" :percentage="percentage" class="progress" :show-text="true"></el-progress>
-    </div>
-    <!--上传完成提示对话框-->
-    <el-dialog
-      title="提示"
-      :visible="dialogVisible"
-      width="30%"
-      :modal-append-to-body='false'
-    >
-      <span>文件上传成功</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="ensure">确 定</el-button>
-      </span>
-    </el-dialog>
+    <object id="MediaPlayer" classid="clsid:22D6F312-B0F6-11D0-94AB-0080C74C7E95" width="800" height="600" standby="Loading Windows Media Player components…" type="application/x-oleobject" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,7,1112">
+      <param name="FileName" value="test.avi">
+      <param name="AutoStart" value="true">
+      <param name="ShowControls" value="true">
+      <param name="BufferingTime" value="2">
+      <param name="ShowStatusBar" value="true">
+      <param name="AutoSize" value="true">
+      <param name="InvokeURLs" value="false">
+      <param name="AnimationatStart" value="1">
+      <param name="TransparentatStart" value="1">
+      <param name="Loop" value="1">
+      <embed type="application/x-mplayer2" src="././src/assets/v_ApplyLipstick_g01_c01.avi" name="MediaPlayer" autostart="1" showstatusbar="1" showdisplay="1" showcontrols="1" loop="0" videoborder3d="0" pluginspage="http://www.microsoft.com/Windows/MediaPlayer/" width="800" height="600"></embed>
+    </object>
 
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import {Upload,Button,Progress,Dialog} from 'element-ui';
-Vue.use(Upload);
-Vue.use(Button);
-Vue.use(Progress);
-Vue.use(Dialog);
 
-export default {
-  name: "UploadFile",
-  data(){
-    return {
-      loading:false,
-      percentage:0,
-      tips:'',
-      dialogVisible:false
-    }
-  },
-  props:['url'],
-  methods:{
-    beforeUpload(file){
-      let fd = new FormData();
-      fd.append('file', file);
-      let config = {
-        onUploadProgress: progressEvent => {
-          //progressEvent.loaded:已上传文件大小
-          //progressEvent.total:被上传文件的总大小
-          let complete = (progressEvent.loaded / progressEvent.total ).toFixed(2) * 100 ;
-          this.percentage = complete;
-          if (this.percentage >= 100){
-            this.dialogVisible = true
-          }
-        },
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      };
-
-    },
-    handleExceed(){
-
-    },
-    submitUpload(){
-      this.loading = true;
-      this.tips = '正在上传中。。。';
-      this.$refs.upload.submit();
-    },
-    ensure(){
-      this.dialogVisible = false;
-      this.loading = false;
-    }
-  }
-}
+export default {}
 </script>
 
 <style scoped>
