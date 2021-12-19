@@ -27,7 +27,7 @@
                     <h3 style="font-weight: bold;color: #666" class="view-text">{{ item.title }}</h3>
                     <div class="bottom clearfix">
                       <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
-                      <span class="button" size="mini">来自 {{item.author}}</span>
+                      <span class="button" size="mini">来自:{{item.author}}  {{item.views}}播放</span>
                     </div>
 
                   </div>
@@ -126,7 +126,7 @@ export default {
 
     dateFormat(date) {
 
-      return moment(date).format("YYYY-MM-DD HH:mm:ss");
+      return moment(date).format("YYYY-MM-DD");
     },
     openURL(item){
 
@@ -138,7 +138,8 @@ export default {
           description:item.description,
           author:item.author,
           uploadTime:item.uploadTime,
-          type:item.type
+          type:item.type,
+          views:item.views
         }})
 
     },
@@ -169,7 +170,6 @@ export default {
       var data = (await (getPublishedVideo(this.searchTitle,tag,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.videoInfo = data.data.videoList;
-
         this.total = data.data.total;
       }
       this.searchTitle=''

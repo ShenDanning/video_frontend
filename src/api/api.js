@@ -36,6 +36,13 @@ export function getPersonalVideoByTitle(title,curPage,pageSize){//有title则相
       }
     });
 }
+export function setViews(videoId){
+  return axios.get('/v1/public/setViews',
+    {params:{
+        'videoId':videoId,
+      }
+    });
+}
 // 通过视频id获取视频
 export function getVideoById(Id){
   return axios.get('/v1/getVideoById',

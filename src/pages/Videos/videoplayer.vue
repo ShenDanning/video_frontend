@@ -4,7 +4,7 @@
     <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'3'}">
       <Menu mode="horizontal" theme="dark" active-name="1">
         <div class="layout-logo">
-          <img src="https://s4.ax1x.com/2021/12/13/oOGpKs.png" style="height: 40px">
+          <img src="../../assets/shu.png" style="height: 40px">
         </div>
         <MenuItem name="1" >
           <p style="color:white;margin-left: 20px;font-size: 20px;font-weight:bold;font-family: Bahnschrift">上海大学视频服务站</p>
@@ -39,7 +39,11 @@
             <br>
             <span>
                    作者：{{videoInfo.author}}
-                  </span>
+            </span>
+            <br>
+            <span>
+                   播放量：{{videoInfo.views}}
+            </span>
 
           </el-card>
         </Col>
@@ -54,6 +58,7 @@
   import axios from 'axios';
   import HeadMenu from "../admin/HeadMenu";
   import SideMenu from "../admin/SideMenu";
+  import {getPersonalVideoByTitle,setViews} from "../../api/api";
   Vue.prototype.$axios = axios;
   export default {
     components: {SideMenu, HeadMenu},
@@ -104,7 +109,8 @@
           description:'',
           picture:'',
           url:'',
-          author:''
+          author:'',
+          views:'',
         },
         back: {
           backgroundSize: "100% 100%",
@@ -124,11 +130,13 @@
       this.videoInfo.title = this.$route.query.title;
       this.videoInfo.author = this.$route.query.author;
       this.videoInfo.description = this.$route.query.description;
+      this.videoInfo.playsum = this.$route.query.playsum;
+      if(this.$route.query.views == null)
+        this.videoInfo.views = 0
+      else this.videoInfo.views = this.$route.query.views;
+      // this.videoInfo.views = this.$route.query.views;
       console.log(this.videoInfo);
       this.playVideo(this.$route.query.url)
-
-
-
     },
     computed: {
       player() {
@@ -164,54 +172,20 @@
           console.log(error);
         });
       },
-      // get_num(curPage,pageSize){
-      //   var url = "http://10.10.22.106/v1/getAllVideo";
-      //   var that = this;
-      //   that.$axios.get(url,{
-      //     params:{
-      //       'curPage': curPage,
-      //       'pageSize': pageSize
-      //     }
-      //   }).then(function (res) {
-      //     if (res.status == 200) {
-      //       that.url ="http://" +res.data.data.videoList[0]["url"].split('//')[1]
-      //       that.playerOptions['sources'][0]['src'] = that.url;
-      //     }
-      //   }).catch(function (error) {
-      //     console.log(error);
-      //   });
-      //
-      //   // return this.num;
-      // },
-      //
-      // getVideoList:function(curPage,pageSize){
-      //   var url = "http://10.10.22.106/v1/getAllVideo";
-      //   var that = this;
-      //   that.$axios.get(url,{
-      //     params:{
-      //       'curPage': curPage,
-      //       'pageSize': pageSize
-      //     }
-      //   }).then(function (res) {
-      //     if (res.status == 200) {
-      //       // that.user = res.data.data;
-      //       console.log(res.data.data.videoList);
-      //     }
-      //   }).catch(function (error) {
-      //     console.log(error);
-      //   });
-      //
-      // },
       onPlayerPause($event) {
       this.isPlay = false;
     },
+
     onPlayerPlay($event) {
-      // alert(this.playerOptions['sources'][0]['src'])
-      // this.$emit('updatePlayer',this.playerOptions['sources'][0]['src']);
       this.isPlay = true;
     },
 
-    onPlayerEnded($event) {},
+    onPlayerEnded($event) {
+      setViews(this.videoInfo.id)
+    },
+    async setViews(id){
+     await (setViews(id));
+    },
     onPlayerClick() {
       if (this.isPlay) {
         this.player.pause();
@@ -227,14 +201,7 @@
   }
 </script>
 <style>
-/*.video-js .vjs-big-play-button {*/
-/*  　　width: 72px;*/
-/*  height: 72px;*/
-/*  border-radius: 100%;*/
-/*  z-index: 100;*/
-/*  background-color: #ffffff;*/
-/*  border: solid 1px #979797;*/
-/*}*/
+
 
 .layout-logo{
   width: 100px;

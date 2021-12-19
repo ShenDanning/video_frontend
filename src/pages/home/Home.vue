@@ -3,7 +3,7 @@
   <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'3'}">
     <Menu mode="horizontal" theme="dark" active-name="1">
       <div class="layout-logo">
-        <img src="https://s4.ax1x.com/2021/12/13/oOGpKs.png" style="height: 40px">
+        <img src="../../assets/shu.png" style="height: 40px">
       </div>
 
       <MenuItem name="1" >
@@ -33,7 +33,7 @@
     <span class="demonstration">默认 Hover 指示器触发</span>
     <el-carousel height="300px">
       <el-carousel-item>
-       <img src="https://s4.ax1x.com/2021/12/13/oOtexg.jpg">
+       <img src="../../assets/shu.jpg">
       </el-carousel-item>
     </el-carousel>
   </div>
@@ -76,13 +76,12 @@ export default {
         localStorage.setItem("collegeId", data.data.collegeId);
         localStorage.setItem("collegeName", data.data.collegeName);
         localStorage.setItem("username", data.data.name);
-        localStorage.setItem("userId",data.data.userId);
         this.$router.push('/VideoManage');
 
       } else {
         sessionStorage.clear();
         localStorage.clear();
-        window.location.href="http://10.10.22.106/video";
+        window.location.href="http://127.0.0.1:8080";
         this.$Notice.warning({ title: "请检查工号或密码是否正确" });
 
       }
@@ -113,7 +112,7 @@ export default {
     console.log(code);
     if (code&&this.username==="未登陆") {
       // alert(document.location.href.split("?")[0]);
-      this.handleOnClickLogin(code,"http://10.10.22.106/video");
+      this.handleOnClickLogin(code,"http://127.0.0.1:8080/login");
     }
   }
 }

@@ -23,10 +23,10 @@
 }
 </style>
 <template>
-      <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'4'}">
+      <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'3'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
           <div class="layout-logo">
-            <img src="https://s4.ax1x.com/2021/12/13/oOGpKs.png" style="height: 40px">
+            <img src="../../assets/shu.png" style="height: 40px">
           </div>
 
           <MenuItem name="1" >

@@ -131,7 +131,6 @@ export default {
     },
 
     async showVideoByType(val){
-
       if(val){
         this.curPage = val;
       }
@@ -140,7 +139,6 @@ export default {
       var data = (await (getVideoByType(this.searchTitle,typeId,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.videoInfo = data.data.videoList;
-
         this.total = data.data.total;
       }
       this.searchTitle=''

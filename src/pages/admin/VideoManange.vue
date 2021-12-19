@@ -30,13 +30,6 @@
               :data="tableData"
               style="width: 100%;margin-top: 10px"
             >
-              <!--              <el-table-column-->
-              <!--                fixed-->
-              <!--                prop="fileName"-->
-              <!--                label="文件名"-->
-              <!--                width="150"-->
-              <!--                show-overflow-tooltip>-->
-              <!--              </el-table-column>-->
               <el-table-column
                 fixed
                 prop="title"
@@ -93,8 +86,8 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="author"
-                label="上传者"
+                prop="views"
+                label="播放量"
                 width="100">
               </el-table-column>
               <el-table-column
@@ -232,23 +225,6 @@
                   <el-link icon="el-icon-plus" style="float: right" @click.native.prevent="typeShow()">没有分类？点击添加！</el-link>
                 </el-form-item>
 
-                <!--                <el-form-item label="视频分类">-->
-                <!--                  <el-select v-model="videoUpload.type" placeholder="请选择"-->
-                <!--                             filterable-->
-                <!--                             allow-create-->
-                <!--                             default-first-option>-->
-                <!--                    <el-option-->
-                <!--                      v-for="item in typeList"-->
-                <!--                      :key="item.id"-->
-                <!--                      :label="item.type"-->
-                <!--                      :value="item.id">-->
-                <!--                    </el-option>-->
-                <!--                  </el-select>-->
-                <!--                </el-form-item>-->
-                <!--                <el-form-item label="是否公开">-->
-                <!--                  <el-radio v-model="radio" label="1">公开</el-radio>-->
-                <!--                  <el-radio v-model="radio" label="2">保密</el-radio>-->
-                <!--                </el-form-item>-->
                 <el-form-item label="视频封面" prop="picture">
                   <el-upload
                     class="upload-demo"
@@ -264,18 +240,6 @@
                   </el-upload>
                 </el-form-item>
                 <el-form-item label="视频" prop="file">
-<!--                  <el-upload-->
-<!--                    class="upload-demo"-->
-<!--                    drag-->
-<!--                    action="#"-->
-<!--                    multiple-->
-<!--                    :limit="1"-->
-<!--                    :http-request="videoAdd"-->
-<!--                  >-->
-<!--                    <i class="el-icon-upload"></i>-->
-<!--                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>-->
-<!--                    <div class="el-upload__tip" slot="tip">只能上传mp4文件</div>-->
-<!--                  </el-upload>-->
                   <el-upload
                     ref="upload"
                     class="upload-demo"
@@ -283,7 +247,7 @@
                     drag
                     action="#"
                     :auto-upload="false"
-                    accept=".mp4"
+                    accept=".mp4,.avi"
                     :on-exceed="handleExceed"
                     v-model="uploadVideo.file"
                    >
@@ -387,7 +351,6 @@ export default {
       loading:false,
       percentage:0,
       tips:'',
-      //dialogVisible:false,
       url:"http://10.10.22.106/v1/uploadVideo",
       radio:'1',
       modal1: false,
@@ -398,7 +361,7 @@ export default {
       modal6:false,
       username:'',
       curPage:1,
-      pageSize:8,
+      pageSize:6,
       total:0,
       searchTitle:'',
       typeList:[{
@@ -426,6 +389,7 @@ export default {
         description: '这是一个视频',
         author: '管理员',
         publish:'0',
+        views:''
       }],
       videoInfo: {
         id:'',
@@ -433,7 +397,7 @@ export default {
         description:'',
         picture:'',
         url:'',
-        type:''
+        type:'',
       },
       TypeInfo: {
         typeName:'',
@@ -529,7 +493,6 @@ export default {
             }
         } else {
           this.$Message.warning("请填写完整信息")
-
         }
       });
 
