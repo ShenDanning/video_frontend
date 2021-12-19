@@ -3,7 +3,7 @@
   <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'3'}">
     <Menu mode="horizontal" theme="dark" active-name="1">
       <div class="layout-logo">
-        <img src="../../assets/shu.png" style="height: 40px">
+        <img src="https://i.postimg.cc/ZnmmJHB9/shu.png" style="height: 40px">
       </div>
 
       <MenuItem name="1" >
@@ -23,7 +23,6 @@
       </MenuItem>
       <MenuItem name="5" to="Control" style="float: right">
         {{username}}
-
       </MenuItem>
 
 
@@ -33,7 +32,7 @@
     <span class="demonstration">默认 Hover 指示器触发</span>
     <el-carousel height="300px">
       <el-carousel-item>
-       <img src="../../assets/shu.jpg">
+        <img src="https://s4.ax1x.com/2021/12/13/oOtexg.jpg">
       </el-carousel-item>
     </el-carousel>
   </div>
