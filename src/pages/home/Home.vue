@@ -16,7 +16,6 @@
           <p style="color: white">登录</p>
         </div>
         <div v-else>
-
           <p style="color: white">后台管理</p>
         </div>
 
@@ -80,7 +79,7 @@ export default {
       } else {
         sessionStorage.clear();
         localStorage.clear();
-        window.location.href="http://127.0.0.1:8080";
+        window.location.href="http://10.10.22.106/video";
         this.$Notice.warning({ title: "请检查工号或密码是否正确" });
 
       }
@@ -111,7 +110,7 @@ export default {
     console.log(code);
     if (code&&this.username==="未登陆") {
       // alert(document.location.href.split("?")[0]);
-      this.handleOnClickLogin(code,"http://127.0.0.1:8080/login");
+      this.handleOnClickLogin(code,"http://10.10.22.106/video");
     }
   }
 }
