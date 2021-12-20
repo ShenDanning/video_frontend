@@ -194,8 +194,8 @@
             <Modal
               v-model="modal2"
               title="视频预览"
-              @on-cancel="cancel1"
-              @on-ok = "cancel1"
+              @on-cancel="cancel"
+              @on-ok = "cancel"
             >
               <video style="width: 475px" :src="videoInfo.url" ref="vueMiniPlayer" controls='controls' autoplay>
               </video>
@@ -253,7 +253,7 @@
                    >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
-                    <div slot="tip" class="el-upload__tip">只能上传mp4或avi文件，且不超过1000M</div>
+                    <div slot="tip" class="el-upload__tip">只能上传mp4/avi文件，且不超过1000M，注意：上传avi时处理时间较长</div>
                   </el-upload>
 
                 </el-form-item>
@@ -503,14 +503,14 @@ export default {
     },
     loading1 () {
       const msg = this.$Message.loading({
-        content: '请稍等',
+        content: '正在处理，请稍等',
         duration: 0
       });
     },
     cancel1(){
       this.$refs.vueMiniPlayer.pause();
       // this.videoInfo.url.clear()
-      this.$Message.info('Clicked cancel');
+      this.$Message.info('已取消');
     },
     typeShow() {
       this.modal6 = true;
@@ -595,12 +595,13 @@ export default {
         this.$Message.destroy();
         this.$Message.success(data.msg);
         this.getAllVideo(1);
+        this.ensure();
       }else{
         this.$message.error("Fail");
       }
     },
     cancel () {
-      this.$Message.info('Clicked cancel');
+      this.$Message.info('已取消');
     },
     //时间戳格式化
     dateFormat(row, column) {

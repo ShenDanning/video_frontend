@@ -20,7 +20,7 @@
         </div>
 
       </MenuItem>
-      <MenuItem name="5" to="Control" style="float: right">
+      <MenuItem name="5" style="float: right">
         {{username}}
       </MenuItem>
 
@@ -79,7 +79,7 @@ export default {
       } else {
         sessionStorage.clear();
         localStorage.clear();
-        window.location.href="http://10.10.22.106/video";
+        window.location.href="http://127.0.0.1:8080/login";
         this.$Notice.warning({ title: "请检查工号或密码是否正确" });
 
       }
@@ -110,7 +110,7 @@ export default {
     console.log(code);
     if (code&&this.username==="未登陆") {
       // alert(document.location.href.split("?")[0]);
-      this.handleOnClickLogin(code,"http://10.10.22.106/video");
+      this.handleOnClickLogin(code,"http://127.0.0.1:8080/login");
     }
   }
 }
