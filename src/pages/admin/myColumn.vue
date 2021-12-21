@@ -8,6 +8,7 @@
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+
             <Row>
               <Col span="24">
                 <Button type="primary"  icon="md-add" style="float: left"
@@ -102,7 +103,7 @@
                     编辑
                   </el-button>
                   <el-button
-                    @click.native.prevent="GoTo(scope.row.id)"
+                    @click.native.prevent="GoTo(scope.row)"
                     type="text"
                     size="small">
                     查看专栏
@@ -360,12 +361,13 @@ export default {
         this.$message.error("Fail");
       }
     },
-    GoTo(id){
+    GoTo(row){
       // alert(id)
       this.$router.push({
         path: '/ColumnVideos',
         query: {
-          id: id
+          id: row.id,
+          name:row.name
         }
       })
     },

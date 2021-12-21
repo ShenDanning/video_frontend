@@ -8,7 +8,12 @@
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
-            <Row>
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">我的专栏</a></el-breadcrumb-item>
+              <el-breadcrumb-item>{{ columnName }}</el-breadcrumb-item>
+
+            </el-breadcrumb>
+            <Row style="margin-top:30px">
               <Col span="24">
                 <Button type="primary"  icon="md-add" style="float: left"
                         @click.native.prevent="addShow()"
@@ -116,7 +121,6 @@
                 <el-form-item label="视频简介">
                   <el-input  type="textarea" placeholder="请输入简介" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoUpload.description"></el-input>
                 </el-form-item>
-
                 <el-form-item label="视频" prop="file">
                   <el-upload
                     ref="upload"
@@ -201,6 +205,7 @@ export default {
     return{
       loading:false,
       percentage:0,
+      columnName:'',
       tips:'',
       url:"http://10.10.22.106/v1/uploadVideo",
       radio:'1',
@@ -529,8 +534,12 @@ export default {
         this.total = data.data.total;
       }
     },
+    backtolast(){
+      this.$router.go(-1);
+    }
 
   },
+
 
 
   beforeRemove(file, fileList) {
@@ -540,6 +549,7 @@ export default {
   mounted() {
     this.username = localStorage.getItem("username");
     this.columnId = this.$route.query.id
+    this.columnName = this.$route.query.name
     // alert(this.columnId)
     if(this.columnId){
       this.searchTree(this.columnId)

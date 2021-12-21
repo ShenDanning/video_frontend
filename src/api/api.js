@@ -95,7 +95,7 @@ export function getVideoByColumn(collectionId,curPage,pageSize) {
       }
     })
 }
-export function addVideo(params){
+export function addVideo(params,config){
   return axios.post('/v1/collections/uploadVideo',params,config)
 }
 
