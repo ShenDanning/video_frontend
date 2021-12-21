@@ -76,11 +76,7 @@ export default new Router({
       name:'Home',
       component:Home
     },
-    {
-      path:'/UploadFile',
-      name:'UploadFile',
-      component:UploadFile
-    },
+
     {
       path:'/myColumn',
       name:'myColumn',
