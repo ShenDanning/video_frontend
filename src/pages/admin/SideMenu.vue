@@ -29,6 +29,10 @@
 <!--          <Icon type="ios-navigate" ></Icon>-->
 <!--          <span>我的视频</span>-->
 <!--        </MenuItem>-->
+        <MenuItem name="5" to="/myColumn">
+          <Icon type="ios-navigate" ></Icon>
+          <span>我的专栏</span>
+        </MenuItem>
         <MenuItem name="3" to="/TypeManage">
           <Icon type="ios-navigate" ></Icon>
           <span>分类管理</span>

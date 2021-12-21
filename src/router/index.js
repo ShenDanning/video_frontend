@@ -11,6 +11,8 @@ import videoSquare from "../pages/Videos/videoSquare";
 import TypeManage from "../pages/admin/TypeManage";
 import UploadFile from "../pages/admin/UploadFile";
 // import demo from "../pages/admin/demo"
+import myColumn from "../pages/admin/myColumn";
+import ColumnVideos from "../pages/admin/ColumnVideos";
 Vue.use(Router)
 
 export default new Router({
@@ -72,6 +74,16 @@ export default new Router({
       path:'/UploadFile',
       name:'UploadFile',
       component:UploadFile
+    },
+    {
+      path:'/myColumn',
+      name:'myColumn',
+      component:myColumn
+    },
+    {
+      path:'/ColumnVideos',
+      name:'ColumnVideos',
+      component:ColumnVideos,
     },
 
 
