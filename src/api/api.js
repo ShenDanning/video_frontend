@@ -68,6 +68,44 @@ export function deleteType(TypeId){
     })
 }
 
+export function getAllColumns(curPage,pageSize) {
+  return axios.get('/v1/collections/getAll',
+    {
+      params:{
+        'curPage':curPage,
+        'pageSize':pageSize
+      }
+    })
+}
+export function deleteColumn(collectionId) {
+  return axios.get('/v1/collections/delete',
+    {
+      params:{
+        'collectionId':collectionId,
+      }
+    })
+}
+export function getVideoByColumn(collectionId,curPage,pageSize) {
+  return axios.get('/v1/getVideoByCollectionId',
+    {
+      params:{
+        'collectionId':collectionId,
+        'curPage': curPage,
+        'pageSize': pageSize
+      }
+    })
+}
+export function addVideo(params){
+  return axios.post('/v1/collections/uploadVideo',params,config)
+}
+
+
+export function editColumn(params){
+  return axios.post('/v1/collections/edit',params,{ headers: {
+      'Content-Type': 'multipart/form-data'}
+  })
+}
+
 export function editVideo(params){
   return axios.post('/v1/editVideoInfo',params,{ headers: {
       'Content-Type': 'multipart/form-data'}
@@ -90,6 +128,17 @@ export function uploadVideoToServer(params,config){
 }
 export function setPublish(params){
   return axios.post('/v1/setPublish',params,{ headers: {
+      'Content-Type': 'multipart/form-data'}
+  })
+}
+//所需字段：columnId(专栏id),publish(0或1)
+export function columnPublish(params){
+  return axios.post('/v1/collections/publish',params,{ headers: {
+      'Content-Type': 'multipart/form-data'}
+  })
+}
+export function addColumn(params){
+  return axios.post('/v1/collections/add',params,{ headers: {
       'Content-Type': 'multipart/form-data'}
   })
 }

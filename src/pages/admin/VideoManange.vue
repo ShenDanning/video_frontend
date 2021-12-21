@@ -122,19 +122,6 @@
                     size="small">
                     预览
                   </el-button>
-                  <!--                  <el-button-->
-                  <!--                    @click.native.prevent="publishRow(scope.$index,scope.row)"-->
-                  <!--                    type="text"-->
-                  <!--                    size="small">-->
-                  <!--                    发布-->
-                  <!--                  </el-button>-->
-                  <!--                  <el-button-->
-                  <!--                    v-else-->
-                  <!--                    @click.native.prevent="cancelPublishRow(scope.$index,scope.row)"-->
-                  <!--                    type="text"-->
-                  <!--                    size="small">-->
-                  <!--                    取消发布-->
-                  <!--                  </el-button>-->
                 </template>
               </el-table-column>
             </el-table>
@@ -437,6 +424,48 @@ export default {
     }
   },
   methods: {
+    // async beforeUpload(file){
+    //   this.loading = true;
+    //   this.tips = '正在上传中。。。';
+    //   this.uping = true;
+    //   let fileSize = Number(file.size / 1024 / 1024);
+    //   if (fileSize > 1000) {
+    //     this.$Message.warning("不能超过1000M")
+    //   }
+    //
+    //   this.videoUpload.file = file;
+    //   let formdata = new FormData();
+    // //  if(this.videoUpload.file==""||this.videoUpload.title==""||)
+    //   formdata.append('file', this.videoUpload.file);
+    //   formdata.append('title',this.videoUpload.title);
+    //   formdata.append('description',this.videoUpload.description);
+    //   formdata.append('picture',this.videoUpload.picture.file);
+    //   formdata.append('typeId',this.videoUpload.type);
+    //   let config = {
+    //     onUploadProgress: progressEvent => {
+    //       //progressEvent.loaded:已上传文件大小
+    //       //progressEvent.total:被上传文件的总大小
+    //       let complete = (progressEvent.loaded / progressEvent.total ).toFixed(1) * 100 ;
+    //       this.percentage = complete;
+    //       if (this.percentage >= 100){
+    //         this.loading = false
+    //         this.loading1()
+    //       }
+    //     },
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    //   };
+    //   var data =(await uploadVideoToServer(formdata,config)).data;
+    //   if(data.status===200){
+    //     this.$Message.destroy();
+    //     this.$Message.success(data.msg);
+    //     this.getAllVideo(this.curPage);
+    //
+    //   }else{
+    //     this.$message.error("Fail");
+    //   }
+    // },
     async beforeUpload(file){
       this.loading = true;
       this.tips = '正在上传中。。。';
@@ -448,7 +477,7 @@ export default {
 
       this.videoUpload.file = file;
       let formdata = new FormData();
-    //  if(this.videoUpload.file==""||this.videoUpload.title==""||)
+      //  if(this.videoUpload.file==""||this.videoUpload.title==""||)
       formdata.append('file', this.videoUpload.file);
       formdata.append('title',this.videoUpload.title);
       formdata.append('description',this.videoUpload.description);
@@ -458,7 +487,7 @@ export default {
         onUploadProgress: progressEvent => {
           //progressEvent.loaded:已上传文件大小
           //progressEvent.total:被上传文件的总大小
-          let complete = (progressEvent.loaded / progressEvent.total ).toFixed(2) * 100 ;
+          let complete = (progressEvent.loaded / progressEvent.total ).toFixed(1) * 100 ;
           this.percentage = complete;
           if (this.percentage >= 100){
             this.loading = false
@@ -755,8 +784,9 @@ export default {
 
     },
 
-    searchTree(){
-      this.getAllVideo(1)
+    searchTree(val){
+      // this.curPage = val
+      this.getAllVideo(val)
     },
 
     async getAllVideo(val){
