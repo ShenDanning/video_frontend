@@ -10,6 +10,7 @@ import Home from "../pages/home/Home";
 import videoSquare from "../pages/Videos/videoSquare";
 import TypeManage from "../pages/admin/TypeManage";
 import UploadFile from "../pages/admin/UploadFile";
+import CollectionsPlayer from "../pages/Videos/CollectionsPlayer";
 // import demo from "../pages/admin/demo"
 Vue.use(Router)
 
@@ -31,6 +32,11 @@ export default new Router({
       path: '/videoplayer',
       name: 'videoplayer',
       component: videoplayer
+    },
+    {
+      path: '/CollectionPlayer',
+      name: 'CollectionPlayer',
+      component:CollectionsPlayer
     },
 
     {

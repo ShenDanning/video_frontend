@@ -6,7 +6,7 @@
         <img src="https://i.postimg.cc/ZnmmJHB9/shu.png" style="height: 40px">
       </div>
 
-      <MenuItem name="1" >
+      <MenuItem name="1">
         <p style="color:white;margin-left: 20px;font-size: 20px;font-weight:bold;font-family: Bahnschrift">上海大学视频服务站</p>
       </MenuItem>
 
@@ -27,15 +27,14 @@
 
     </Menu>
   </Header>
-  <div class="block">
-    <span class="demonstration">默认 Hover 指示器触发</span>
+  <div >
     <el-carousel height="300px">
       <el-carousel-item>
         <img src="https://s4.ax1x.com/2021/12/13/oOtexg.jpg">
       </el-carousel-item>
     </el-carousel>
   </div>
-  <VideoList style="margin-left: 10%;margin-right: 10%"/>
+  <VideoList style="margin-left: 8%;margin-right: 8%;"/>
 </div>
 </template>
 

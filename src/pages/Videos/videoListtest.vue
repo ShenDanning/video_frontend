@@ -1,59 +1,52 @@
 <template>
+  <div>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="全部" name="allVideos">
+        <Row>
+          <Col span="1">
+            <el-tag style="background-color: white;border: white;color: #999999;font-size: 14px">分类</el-tag>
+          </Col>
+          <el-button size="mini" round :autofocus="100%activeIndex"
+                     @click="SelectType(100)"
+          >全部</el-button>
+          <el-button v-for="item in tagList" size="mini" round :autofocus="item.id%activeIndex" :key="item.id"
+                     @click="SelectType(item.id)"
+          >{{item.tag}}</el-button>
 
-  <div class="layout">
-    <Layout :style="back">
-      <HeadMenu/>
-      <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
-          <SideMenu/>
-        </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
-
-          <Content  :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-              <el-menu-item index="1">课程</el-menu-item>
-              <el-menu-item index="2">待定</el-menu-item>
-            </el-menu>
-            <div class="line"></div>
-            <br>
-            <Row>
-              <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in videoInfo" :key="item.id">
-                <el-card shadow="hover" @click.native="openArticle('123')" style="height: 200px;max-width: 300px;">
-                  <img :src="item.picture" style="height:140px;width:100%" class="image">
-                  <div style="padding: 0px;">
-                    <h3>{{ item.title }}</h3>
-                  </div>
-                </el-card>
-              </Col>
-
-            </Row>
-
-
-            <div class="block">
-              <el-pagination
-                :current-page="curPage"
-                :page-size ="pageSize"
-                :total ="total"
-                style="padding:30px 0; text-align:center;"
-                layout="total,prev,pager,next,jumper"
-                @current-change="changePage">
-              </el-pagination>
-            </div>
-          </Content>
-
-
-
-        </Layout>
-
-      </Layout>
-
-    </Layout>
+        </Row>
+        <Row style="margin-top: 20px">
+          <Col span="1">
+            <el-tag style="background-color: white;border: white;color: #999999;font-size: 14px">搜索</el-tag>
+          </Col>
+                          <Input
+                            v-model="searchTitle"
+                            :search="true"
+                            suffix="ios-search"
+                            placeholder="请输入视频标题"
+                            style="width: auto;margin-left: 10px"
+                            @on-search="searchVideo" />
+        </Row>
+        <Row style="margin-top: 20px">
+          <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in videoInfo" :key="item.id">
+            <el-card :body-style="{ padding: '0px' }">
+              <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openURL(item)" >
+              <div style="padding: 14px;text-align: left">
+                <h3 style="font-weight: bold;color: #666" class="view-text">{{ item.title }}</h3>
+                <div class="bottom clearfix">
+                  <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
+                  <span class="button" size="mini">来自:{{item.author}}  {{item.views}}播放</span>
+                </div>
+              </div>
+            </el-card>
+          </Col>
+        </Row>
 
 
 
-
+      </el-tab-pane>
+      <el-tab-pane label="专栏" name="collections">专栏</el-tab-pane>
+    </el-tabs>
   </div>
-
 
 
 </template>
@@ -64,13 +57,17 @@ import 'video.js/dist/video-js.css'
 import axios from 'axios';
 import HeadMenu from "../admin/HeadMenu";
 import SideMenu from "../admin/SideMenu";
-import {deleteVideo, editVideo, getAllVideo} from "@/api/api";
+import {getPublishedVideo, getTagList, getVideoByType} from "../../api/api";
+import moment from "moment";
+
 Vue.prototype.$axios = axios;
 export default {
   components: {SideMenu, HeadMenu},
   data() {
     return {
       currentVideo:'',
+      tagList:[],
+      isSelect:100,
       // 很多参数其实没必要的，也还有很多参数没列出来，只是把我看到的所有文章做一个统计
       playerOptions: {
         height: "30%",
@@ -111,10 +108,16 @@ export default {
       pageSize:8,
       total:0,
       videoInfo:[],
+      activeName:'allVideos',
+      activeIndex:100,
+      searchTitle:'',
+      username:''
     }
   },
   mounted() {
-    this.show_List(this.curPage,this.pageSize)
+    this.username = localStorage.getItem("username")
+    this.showVideoByType(1,0);
+    this.getTagList();
   },
   computed: {
     player() {
@@ -122,20 +125,67 @@ export default {
     },
   },
   methods: {
-    openArticle(data){
-      console.log(data)
+
+    dateFormat(date) {
+
+      return moment(date).format("YYYY-MM-DD");
+    },
+    openURL(item){
+
+      this.$router.push({name:'videoplayer',
+        query:{
+          url: item.url,
+          id: item.id,
+          title: item.title,
+          description:item.description,
+          author:item.author,
+          uploadTime:item.uploadTime,
+          type:item.type,
+          views:item.views
+        }})
+
     },
     async changePage(val){
       if(val){
         this.curPage = val;
       }
     },
-    async show_List(curPage,pageSize){
-      var data = (await (getAllVideo(this.curPage,this.pageSize))).data;
+
+    async getTagList(){
+      var data = (await(getTagList())).data;
+      if(data.status === 200){
+        this.tagList = data.data.tagList;
+      }
+    },
+
+    searchVideo(key){
+      this.showVideoByType(1)
+    },
+
+    async showVideoByType(val){
+
+      if(val){
+        this.curPage = val;
+      }
+      // alert(this.activeIndex)
+
+      var tag=this.activeIndex===100?0:this.activeIndex;
+
+      var data = (await (getPublishedVideo(this.searchTitle,tag,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.videoInfo = data.data.videoList;
         this.total = data.data.total;
       }
+      this.searchTitle=''
+    },
+
+    SelectType(key){
+      if(key!=100){
+        this.activeIndex=key;
+      }else{
+        this.activeIndex=0;
+      }
+      this.showVideoByType(1)
     },
     onPlayerPause($event) {
       this.isPlay = false;
@@ -143,7 +193,6 @@ export default {
     onPlayerPlay($event) {
       this.isPlay = true;
     },
-
     onPlayerEnded($event) {},
     onPlayerClick() {
       if (this.isPlay) {
@@ -155,29 +204,53 @@ export default {
   }
 }
 </script>
+<style>
+.time {
+  font-size: 13px;
+  color: #999;
+}
 
-<!--              <Row>-->
-<!--                <Col span="12" offset="6">-->
-<!--                  <video-player   class="video-player-box" ref="videoPlayer" :options="playerOptions" :playsinline="true"-->
-<!--                                customEventName="customstatechangedeventname"-->
-<!--                                @play="onPlayerPlay($event)"-->
-<!--                                @pause="onPlayerPause($event)"-->
-<!--                                @ended="onPlayerEnded($event)"-->
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
 
-<!--                  >-->
-<!--                  </video-player>-->
-<!--                </Col>-->
-<!--              </Row>-->
+}
 
-<!--            <Row>-->
-<!--            <Col v-for="item in data" :key="item.id" span="6">-->
-<!--                <video-player  style="margin-left: 10px" class="video-player-box" ref="videoPlayer" :options="item.playerOptions" :playsinline="true"-->
-<!--                              customEventName="customstatechangedeventname"-->
-<!--                              @play="onPlayerPlay($event)"-->
-<!--                              @pause="onPlayerPause($event)"-->
-<!--                              @ended="onPlayerEnded($event)"-->
-<!--                >-->
-<!--                </video-player>-->
+.button {
+  padding: 0;
+  float: right;
+  font-size: 13px;
+  color: #999;
+}
 
-<!--             </Col>-->
-<!--            </Row>-->
+.image {
+  width: 100%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both
+}
+.view-text{
+  /**
+	思路：
+	1.设置inline-block属相
+	2.强制不换行
+	3.固定高度
+	4.隐藏超出部分
+	5.显示“……”
+  */
+  display: inline-block;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  text-overflow:ellipsis;
+}
+
+</style>

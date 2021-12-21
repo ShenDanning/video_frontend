@@ -1,51 +1,68 @@
 <template>
   <div>
-            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="SelectType">
-              <el-menu-item index="0">
-                全部
-              </el-menu-item>
-              <el-menu-item v-for="item in tagList" :key="item.id" :index="item.id.toString()">
-                {{ item.tag }}
-              </el-menu-item>
-              <el-menu-item style="float: right" index="-1">
-                <Input
-                  v-model="searchTitle"
-                  :search="true"
-                  suffix="ios-search"
-                  placeholder="请输入视频标题"
-                  style="width: auto;margin-left: 10px"
-                  @on-search="searchVideo" />
-              </el-menu-item>
-            </el-menu>
-            <div class="line"></div>
-            <br>
-            <Row>
-              <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in videoInfo" :key="item.id">
-                <el-card :body-style="{ padding: '0px' }">
-                  <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openURL(item)" >
-                  <div style="padding: 14px;text-align: left">
-                    <h3 style="font-weight: bold;color: #666" class="view-text">{{ item.title }}</h3>
-                    <div class="bottom clearfix">
-                      <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
-                      <span class="button" size="mini">来自:{{item.author}}  {{item.views}}播放</span>
-                    </div>
+    <el-tabs v-model="activeName" >
+      <el-tab-pane name="allVideos">
+        <span slot="label"><i class="el-icon-menu"></i> 全 部</span>
+        <el-card class="box-card" shadow="never" style="margin-top: 8px;padding:0;background-color: #f8f9fb">
+          <Row>
+            <Col span="1">
+              <el-tag style="background-color: #f8f9fb;border: #f8f9fb;color: #999999;font-size: 14px">分类</el-tag>
+            </Col>
+            <el-button size="mini" round autofocus
+                       @click="SelectType(100)"
+            >全部</el-button>
 
-                  </div>
-                </el-card>
-              </Col>
-            </Row>
-            <div class="block">
-              <el-pagination
-                :current-page="curPage"
-                :page-size ="pageSize"
-                :total ="total"
-                style="padding:30px 0; text-align:center;"
-                layout="total,prev,pager,next,jumper"
-                @current-change="showVideoByType">
-              </el-pagination>
-            </div>
+            <el-button v-for="item in tagList" size="mini" round  autofocus :key="item.id"
+                       @click="SelectType(item.id)"
+            >{{item.tag}}</el-button>
+          </Row>
+          <Row style="margin-top: 20px">
+            <Col span="1">
+              <el-tag style="background-color: #f8f9fb;border: #f8f9fb;color: #999999;font-size: 14px">搜索</el-tag>
+            </Col>
+            <Input
+              v-model="searchTitle"
+              :search="true"
+              suffix="ios-search"
+              placeholder="请输入视频标题"
+              style="width: auto;margin-left: 10px"
+              @on-search="searchVideo" />
+          </Row>
+
+        </el-card>
+
+
+        <Row style="margin-top: 20px">
+          <Col :span="6" style="padding: 5px; padding-bottom: 10px;" v-for="item in videoInfo" :key="item.id">
+            <el-card :body-style="{ padding: '0px' }">
+              <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openURL(item)" >
+              <div style="padding: 14px;text-align: left">
+                <h3 style="font-weight: bold;color: #666" class="view-text">{{ item.title }}</h3>
+                <div class="bottom clearfix">
+                  <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
+                  <span class="button" size="mini">来自:{{item.author}}  {{item.views}}播放</span>
+                </div>
+              </div>
+            </el-card>
+          </Col>
+        </Row>
+        <div class="block">
+          <el-pagination
+            :current-page="curPage"
+            :page-size ="pageSize"
+            :total ="total"
+            style="padding:30px 0; text-align:center;"
+            layout="total,prev,pager,next,jumper"
+            @current-change="showVideoByType">
+          </el-pagination>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane name="collections">
+        <span slot="label"><i class="el-icon-files"></i> 专 栏</span>
+        <Collections/>
+      </el-tab-pane>
+    </el-tabs>
   </div>
-
 
 
 </template>
@@ -56,17 +73,18 @@ import 'video.js/dist/video-js.css'
 import axios from 'axios';
 import HeadMenu from "../admin/HeadMenu";
 import SideMenu from "../admin/SideMenu";
-import {getPublishedVideo, getTagList, getVideoByType} from "../../api/api";
+import {getPublishedCollections, getPublishedVideo, getTagList} from "../../api/api";
 import moment from "moment";
+import Collections from "../home/Collections";
 
 Vue.prototype.$axios = axios;
 export default {
-  components: {SideMenu, HeadMenu},
+  components: {Collections, SideMenu, HeadMenu},
   data() {
     return {
       currentVideo:'',
-
       tagList:[],
+      isSelect:100,
       // 很多参数其实没必要的，也还有很多参数没列出来，只是把我看到的所有文章做一个统计
       playerOptions: {
         height: "30%",
@@ -107,15 +125,18 @@ export default {
       pageSize:8,
       total:0,
       videoInfo:[],
-      activeIndex:'0',
+      activeName:'allVideos',
+      activeIndex:100,
       searchTitle:'',
-      username:''
+      username:'',
+
     }
   },
   mounted() {
     this.username = localStorage.getItem("username")
     this.showVideoByType(1,0);
     this.getTagList();
+
   },
   computed: {
     player() {
@@ -165,20 +186,23 @@ export default {
       if(val){
         this.curPage = val;
       }
-     // alert(this.activeIndex)
-      var tag=this.activeIndex;
+      // alert(this.activeIndex)
+
+      var tag=this.activeIndex===100?0:this.activeIndex;
+
       var data = (await (getPublishedVideo(this.searchTitle,tag,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.videoInfo = data.data.videoList;
         this.total = data.data.total;
       }
       this.searchTitle=''
-
     },
 
     SelectType(key){
-      if(key!=-1){
+      if(key!=100){
         this.activeIndex=key;
+      }else{
+        this.activeIndex=0;
       }
       this.showVideoByType(1)
     },
@@ -195,6 +219,18 @@ export default {
       } else {
         this.player.play();
       }
+    },
+    async getPublishedCollectionsFront(val){
+
+      if(val){
+        this.curPage = val;
+      }
+      var data = (await getPublishedCollections("",this.curPage,this.pageSize)).data;
+      if(data.status===200){
+        this.collectionsInfo = data.data.collectionsList;
+      }
+
+
     },
   }
 }

@@ -142,3 +142,13 @@ export function getPublishedVideo(title,tag,curPage,pageSize){
     }
   })
 }
+
+export function getPublishedCollections(name,curPage,pageSize){
+  return axios.get("/v1/collections/getPublished",{
+    params:{
+      'name':name,
+      'curPage':curPage,
+      'pageSize':pageSize
+    }
+  })
+}
