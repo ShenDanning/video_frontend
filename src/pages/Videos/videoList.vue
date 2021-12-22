@@ -32,20 +32,28 @@
         </el-card>
 
 
-        <Row style="margin-top: 20px">
-          <Col :span="6" style="padding: 5px; padding-bottom: 10px;" v-for="item in videoInfo" :key="item.id">
-            <el-card :body-style="{ padding: '0px' }">
-              <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openURL(item)" >
-              <div style="padding: 14px;text-align: left">
-                <h3 style="font-weight: bold;color: #666" class="view-text">{{ item.title }}</h3>
-                <div class="bottom clearfix">
-                  <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
-                  <span class="button" size="mini">来自:{{item.author}}  {{item.views}}播放</span>
+
+          <div v-if="videoInfo.length==0">
+            <el-empty description="没有相关视频"></el-empty>
+          </div>
+          <div v-else>
+            <Row style="margin-top: 20px">
+            <Col :span="6" style="padding: 5px; padding-bottom: 10px;" v-for="item in videoInfo" :key="item.id">
+              <el-card :body-style="{ padding: '0px' }">
+                <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openURL(item)" >
+                <div style="padding: 14px;text-align: left">
+                  <h3 style="font-weight: bold;color: #666" class="view-text">{{ item.title }}</h3>
+                  <div class="bottom clearfix">
+                    <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
+                    <span class="button" size="mini">来自:{{item.author}}  {{item.views}}播放</span>
+                  </div>
                 </div>
-              </div>
-            </el-card>
-          </Col>
-        </Row>
+              </el-card>
+            </Col>
+            </Row>
+          </div>
+
+
         <div class="block">
           <el-pagination
             :current-page="curPage"
