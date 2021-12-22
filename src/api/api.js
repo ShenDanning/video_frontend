@@ -131,7 +131,7 @@ export function setPublish(params){
       'Content-Type': 'multipart/form-data'}
   })
 }
-//所需字段：columnId(专栏id),publish(0或1)
+
 export function columnPublish(params){
   return axios.post('/v1/collections/publish',params,{ headers: {
       'Content-Type': 'multipart/form-data'}

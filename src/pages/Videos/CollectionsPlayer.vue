@@ -32,9 +32,9 @@
             选集
           </h2>
           <el-card shadow="never" class="infinite-list" v-infinite-scroll="load"  style="overflow:auto;margin-top: 20px;padding:0;background-color: #f8f9fb;height: 380px">
-            <Row  v-for="item in videoList" :key="item.id" style="overflow:auto" class="infinite-list-item">
+            <Row  v-for="item in tableData" :key="item.id" style="overflow:auto" class="infinite-list-item">
               <el-button  size="small" style="width: 100%;margin-top: 2px;text-align: left" autofocus
-                         @click="SelectVideo(item.id)"
+                         @click="playVideo(item.url,item.id)"
               >{{item.title}}</el-button>
             </Row>
 
@@ -43,8 +43,9 @@
       </Row>
         <Col Col span="17">
           <el-card style="margin-top: 10px;" shadow="never" >
-            <h1 style="text-align: left">合集的名字</h1>
-            <p style="text-align: left">简介</p>
+            <h1 style="text-align: left">{{this.collectionName}}</h1>
+            <br>
+            <p style="text-align: left">简介：{{ this.collectionDescription }}</p>
 
           </el-card>
         </Col>
@@ -61,43 +62,27 @@ import 'video.js/dist/video-js.css'
 import axios from 'axios';
 import HeadMenu from "../admin/HeadMenu";
 import SideMenu from "../admin/SideMenu";
-import {getPersonalVideoByTitle,setViews} from "../../api/api";
+import {getPersonalVideoByTitle,setViews,getVideoByColumn} from "../../api/api";
 Vue.prototype.$axios = axios;
 export default {
   components: {SideMenu, HeadMenu},
   data() {
     return {
       currentVideo:'',
-      videoList:[{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },{
-        title:"第一集"
-      },{
-        title:"第二集"
-      },
-      ],
+      tableData: [{
+        id:1,
+        fileName: 'text1',
+        title: '我的视频',
+        picture: '图片url',
+        uploadTime: '2021-11-20',
+        description: '这是一个视频',
+        author: '管理员',
+        publish:'0',
+        views:'',
+        typeId:'',
+        type: '',
+        url:'',
+      }],
       // 很多参数其实没必要的，也还有很多参数没列出来，只是把我看到的所有文章做一个统计
       playerOptions: {
         height: "30%",
@@ -152,25 +137,22 @@ export default {
         width: "100%",
       },
       username:'',
-      count:0
+      count:0,
+      url:'',
+      collectionDescription:'',
+      collectionName:'',
 
     }
   },
   mounted() {
     this.username = localStorage.getItem("username")
-
     //   alert(this.$route.params.title)
-    this.videoInfo.id = this.$route.query.id;
-    this.videoInfo.title = this.$route.query.title;
-    this.videoInfo.author = this.$route.query.author;
-    this.videoInfo.description = this.$route.query.description;
-    this.videoInfo.playsum = this.$route.query.playsum;
-    if(this.$route.query.views == null)
-      this.videoInfo.views = 0
-    else this.videoInfo.views = this.$route.query.views;
-    // this.videoInfo.views = this.$route.query.views;
-    console.log(this.videoInfo);
-    this.playVideo(this.$route.query.url)
+    this.url = this.$route.query.id;
+    this.collectionName = this.$route.query.name;
+    this.collectionDescription = this.$route.query.description;
+    this.searchTree(this.url)
+
+
   },
   computed: {
     player() {
@@ -183,29 +165,24 @@ export default {
       console.log(data)
     },
 
-    playVideo(url){
+    playVideo(url,id){
+      this.videoInfo.id = id
       this.playerOptions['sources'][0]['src']=url;
       console.log(this.playerOptions)
     },
-    show_List(curPage,pageSize){
-      var url = "http://10.10.22.106/v1/getAllVideo";
-      var that = this;
-      that.$axios.get(url,{
-        params:{
-          'curPage': curPage,
-          'pageSize': pageSize
-        }
-      }).then(function (res) {
-        if (res.status == 200) {
-          for(var i = 0;i<4 ;i++){
-            that.url ="http://" +res.data.data.videoList[i]["url"].split('//')[1]
-            that.data[i].playerOptions['sources'][0]['src'] = that.url;
-          }
-        }
-      }).catch(function (error) {
-        console.log(error);
-      });
+    searchTree(val){
+      // this.curPage = val
+      this.getVideoByColumn(val)
     },
+    async getVideoByColumn(columnid){
+      var data = (await (getVideoByColumn(columnid,1,1000))).data;
+      if(data.status === 200){
+        this.tableData = data.data.videoList;
+        this.playerOptions['sources'][0]['src'] = data.data.videoList[0]["url"]
+        this.videoInfo.id = data.data.videoList[0]["id"]
+      }
+    },
+
     onPlayerPause($event) {
       this.isPlay = false;
     },

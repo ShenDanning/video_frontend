@@ -3,7 +3,7 @@
     <Row style="margin-top: 20px">
       <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in collectionsInfo" :key="item.id">
         <el-card :body-style="{ padding: '0px' }">
-          <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item.id)" >
+          <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item.id,item.name,item.description)" >
           <div style="padding: 14px;text-align: left">
             <h3 style="font-weight: bold;color: #666" class="view-text">
               {{ item.name }} <el-tag  size="mini">合集</el-tag>
@@ -37,8 +37,6 @@ import moment from "moment";
 
 export default {
   name: "Collections",
-
-
   data(){
     return{
       searchName:'',
@@ -56,18 +54,15 @@ export default {
       },
 
 
-      openCollections(key) {
+      openCollections(key,name,description) {
         this.$router.push({name:'CollectionPlayer',
           query:{
-
-            id: key.id,
+            id: key,
+            name:name,
+            description:description
           }})
       },
       async getPublishedCollectionsFront(val){
-
-        // if(val){
-        //   this.curPage = val;
-        // }
         var data = (await getPublishedCollections("",this.curPage,this.pageSize)).data;
         if(data.status===200){
           this.collectionsInfo = data.data.collectionsList;

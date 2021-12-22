@@ -11,6 +11,7 @@ import videoSquare from "../pages/Videos/videoSquare";
 import TypeManage from "../pages/admin/TypeManage";
 import UploadFile from "../pages/admin/UploadFile";
 import CollectionsPlayer from "../pages/Videos/CollectionsPlayer";
+import sortdemo from "../pages/home/sortdemo"
 // import demo from "../pages/admin/demo"
 import myColumn from "../pages/admin/myColumn";
 import ColumnVideos from "../pages/admin/ColumnVideos";
@@ -87,6 +88,11 @@ export default new Router({
       name:'ColumnVideos',
       component:ColumnVideos,
     },
+    // {
+    //   path:'/sortdemo',
+    //   name:'sortdemo',
+    //   component:sortdemo,
+    // },
 
 
   ]

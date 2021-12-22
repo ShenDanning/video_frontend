@@ -443,6 +443,7 @@ export default {
       var data =(await addColumn(formdata)).data;
       if(data.status===200){
         this.$Message.success(data.msg);
+        this.searchTree()
       }else{
         this.$message.error("发布失败！");
       }
@@ -460,7 +461,7 @@ export default {
       this.columnPublish.publish = 1;
       // alert(this.videoUpload.type);
       var formdata = new FormData();
-      formdata.append('columnId', this.columnPublish.columnId);
+      formdata.append('collectionId', this.columnPublish.columnId);
       formdata.append('publish',this.columnPublish.publish);
       var data =(await columnPublish(formdata)).data;
       if(data.status===200){

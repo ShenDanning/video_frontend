@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
+    "drag2sortable": "^1.0.1",
     "element-ui": "^2.15.6",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",

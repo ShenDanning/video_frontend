@@ -10,6 +10,7 @@ import ElementUI from 'element-ui';
 import ViewUI from 'view-design';
 Vue.prototype.$axios = axios;
 var axios = require('axios');
+var drag = require('drag2sortable/drag2sortable.jquery.js');
 axios.defaults.baseURL = 'http://10.10.22.106';
 //引入完成之后需要挂载到vue上
 import 'element-ui/lib/theme-chalk/index.css';
