@@ -71,7 +71,6 @@
                 width="180"
                 show-overflow-tooltip>
                 <template slot-scope="scope">
-
                   <el-switch
                     v-model="scope.row.publish"
                     active-color="#13ce66"
@@ -343,8 +342,8 @@ export default {
           let complete = (progressEvent.loaded / progressEvent.total ).toFixed(1) * 100 ;
           this.percentage = complete;
           if (this.percentage >= 100){
-            this.loading = false
-            this.loading1()
+            this.tips = "正在处理视频。。。"
+
           }
         },
         headers: {
@@ -354,6 +353,8 @@ export default {
       var data =(await uploadVideoToServer(formdata,config)).data;
       if(data.status===200){
         this.$Message.destroy();
+        this.loading = false;
+        this.tips="正在上传视频。。。"
         this.$Message.success(data.msg);
         this.getAllVideo(1);
 
@@ -474,7 +475,7 @@ export default {
     async undoSetPublish(row){
       // alert(this.videoUpload.type);
       var formdata = new FormData();
-      formdata.append('columnId',row.id);
+      formdata.append('collectionId',row.id);
       formdata.append('publish',-1);
       // formdata.append('tag',-1);
       var data =(await columnPublish(formdata)).data;
@@ -493,7 +494,6 @@ export default {
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
-      this.loading1();
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
         this.$Message.destroy();

@@ -11,7 +11,7 @@
 <!--        </MenuItem>-->
         <Submenu name="2" to="/VideoManage">
           <template slot="title">
-            <Icon type="ios-people" />
+            <Icon type="ios-videocam" />
             我的视频
           </template>
 <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
@@ -22,7 +22,6 @@
               {{ item.type }}
             </MenuItem>
           </template>
-
           <!--          v-for="item in tagInfo"-->
         </Submenu>
 <!--        <MenuItem name="2" to="/VideoManage">-->
@@ -30,17 +29,32 @@
 <!--          <span>我的视频</span>-->
 <!--        </MenuItem>-->
         <MenuItem name="5" to="/myColumn">
-          <Icon type="ios-navigate" ></Icon>
+          <Icon type="ios-film" ></Icon>
           <span>我的专栏</span>
         </MenuItem>
         <MenuItem name="3" to="/TypeManage">
-          <Icon type="ios-navigate" ></Icon>
+          <Icon type="ios-pricetag" ></Icon>
           <span>分类管理</span>
         </MenuItem>
         <MenuItem name="4" to = "/videoSquare">
-          <Icon type="ios-navigate"></Icon>
+          <Icon type="logo-youtube"></Icon>
           <span>视频广场</span>
         </MenuItem>
+        <div v-if="identity>=1">
+          <Submenu name="6" to="">
+            <template slot="title">
+              管理员
+            </template>
+            <template>
+              <MenuItem name="6-0" to="/videoPass">视频审核</MenuItem>
+
+            </template>
+            <!--          v-for="item in tagInfo"-->
+          </Submenu>
+        </div>
+
+
+
       </Menu>
 
 </template>
@@ -52,6 +66,7 @@ export default {
   name: "SideMenu",
   data(){
     return{
+      identity:0,
       menuList:{
         author:'',
         id:'',
@@ -84,6 +99,7 @@ export default {
 
     //获取分类
     this.getTypeList();
+    this.identity = localStorage.getItem("identity")
 
   }
 }

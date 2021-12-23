@@ -8,14 +8,13 @@
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+
             <Row>
               <Col span="24">
-                <Button type="primary"  icon="md-add" style="float: left"
+                <Button type="primary"  icon="md-add" style="float: left;margin-right: 10px"
                         @click.native.prevent="uploadShow()"
                 >上传视频</Button>
-                <!--                  <Button type="primary"  icon="ios-construct" style="float: left;margin-left: 20px"-->
-                <!--                          @click.native.prevent="typeShow()"-->
-                <!--                  >管理分类</Button>-->
+
                 <Input
                   v-model="searchTitle"
                   :search="true"
@@ -62,7 +61,6 @@
                 <!--                  <el-tag size="medium" v-else>未发布</el-tag>-->
                 <!--                </template>-->
                 <template slot-scope="scope">
-
                   <el-switch
                     v-model="scope.row.publish"
                     active-color="#13ce66"
@@ -74,11 +72,21 @@
                   </el-switch>
                 </template>
               </el-table-column>
+              <el-table-column
+                align="center"
+                label="发布的类型"
+                width="100">
+                <template slot-scope="scope">
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">{{ scope.row.tag }}</el-tag>
+                  </div>
+                </template>
+              </el-table-column>
 
               <el-table-column
                 align="center"
-                label="分类"
-                width="180">
+                label="我的分类"
+                width="100">
                 <template slot-scope="scope">
                   <div slot="reference" class="name-wrapper">
                     <el-tag size="medium">{{ scope.row.type }}</el-tag>
@@ -424,48 +432,11 @@ export default {
     }
   },
   methods: {
-    // async beforeUpload(file){
-    //   this.loading = true;
-    //   this.tips = '正在上传中。。。';
-    //   this.uping = true;
-    //   let fileSize = Number(file.size / 1024 / 1024);
-    //   if (fileSize > 1000) {
-    //     this.$Message.warning("不能超过1000M")
-    //   }
-    //
-    //   this.videoUpload.file = file;
-    //   let formdata = new FormData();
-    // //  if(this.videoUpload.file==""||this.videoUpload.title==""||)
-    //   formdata.append('file', this.videoUpload.file);
-    //   formdata.append('title',this.videoUpload.title);
-    //   formdata.append('description',this.videoUpload.description);
-    //   formdata.append('picture',this.videoUpload.picture.file);
-    //   formdata.append('typeId',this.videoUpload.type);
-    //   let config = {
-    //     onUploadProgress: progressEvent => {
-    //       //progressEvent.loaded:已上传文件大小
-    //       //progressEvent.total:被上传文件的总大小
-    //       let complete = (progressEvent.loaded / progressEvent.total ).toFixed(1) * 100 ;
-    //       this.percentage = complete;
-    //       if (this.percentage >= 100){
-    //         this.loading = false
-    //         this.loading1()
-    //       }
-    //     },
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data'
-    //     }
-    //   };
-    //   var data =(await uploadVideoToServer(formdata,config)).data;
-    //   if(data.status===200){
-    //     this.$Message.destroy();
-    //     this.$Message.success(data.msg);
-    //     this.getAllVideo(this.curPage);
-    //
-    //   }else{
-    //     this.$message.error("Fail");
-    //   }
-    // },
+    typeManage(){
+
+      this.$router.push('/TypeManage');
+    },
+
     async beforeUpload(file){
       this.loading = true;
       this.tips = '正在上传中。。。';
@@ -490,8 +461,7 @@ export default {
           let complete = (progressEvent.loaded / progressEvent.total ).toFixed(1) * 100 ;
           this.percentage = complete;
           if (this.percentage >= 100){
-            this.loading = false
-            this.loading1()
+            this.tips = "正在处理视频。。。"
           }
         },
         headers: {
@@ -501,6 +471,8 @@ export default {
       var data =(await uploadVideoToServer(formdata,config)).data;
       if(data.status===200){
         this.$Message.destroy();
+        this.loading=false;
+        this.tips="正在上传。。。"
         this.$Message.success(data.msg);
         this.getAllVideo(1);
 
@@ -618,7 +590,7 @@ export default {
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
-      this.loading1();
+
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
         this.$Message.destroy();
@@ -784,9 +756,9 @@ export default {
 
     },
 
-    searchTree(val){
+    searchTree(){
       // this.curPage = val
-      this.getAllVideo(val)
+      this.getAllVideo()
     },
 
     async getAllVideo(val){

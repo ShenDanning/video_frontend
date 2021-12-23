@@ -2,7 +2,7 @@
   <div>
     <el-tabs v-model="activeName" >
       <el-tab-pane name="allVideos">
-        <span slot="label"><i class="el-icon-menu"></i> 全 部</span>
+        <span slot="label" style="font-size: 16px;"><i class="el-icon-menu"></i> 全 部</span>
         <el-card class="box-card" shadow="never" style="margin-top: 8px;padding:0;background-color: #f8f9fb">
           <Row>
             <Col span="1">
@@ -66,7 +66,7 @@
         </div>
       </el-tab-pane>
       <el-tab-pane name="collections">
-        <span slot="label"><i class="el-icon-files"></i> 专 栏</span>
+        <span slot="label" style="font-size: 16px"><i class="el-icon-files"></i> 专 栏</span>
         <Collections/>
       </el-tab-pane>
     </el-tabs>

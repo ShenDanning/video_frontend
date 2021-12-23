@@ -347,8 +347,8 @@ export default {
           let complete = (progressEvent.loaded / progressEvent.total ).toFixed(1) * 100 ;
           this.percentage = complete;
           if (this.percentage >= 100){
-            this.loading = false
-            this.loading1()
+            this.tips = "正在处理视频。。。"
+
           }
         },
         headers: {
@@ -358,6 +358,8 @@ export default {
       var data =(await addVideo(formdata,config)).data;
       if(data.status===200){
         this.$Message.destroy();
+        this.loading = false;
+        this.tips="正在上传视频。。。"
         this.$Message.success(data.msg);
         this.searchTree(this.columnId);
       }else{
@@ -442,7 +444,7 @@ export default {
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
-      this.loading1();
+
       var data =(await uploadVideoToServer(formdata)).data;
       if(data.status===200){
         this.$Message.destroy();

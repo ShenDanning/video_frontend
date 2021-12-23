@@ -9,16 +9,16 @@
       <MenuItem name="1">
         <p style="color:white;margin-left: 20px;font-size: 20px;font-weight:bold;font-family: Bahnschrift">上海大学视频服务站</p>
       </MenuItem>
-
-
       <MenuItem name="6" style="float: right" :to="{name:'Login'}">
         <div v-if="username==='未登陆'">
           <p style="color: white">登录</p>
         </div>
         <div v-else>
-          <p style="color: white">后台管理</p>
-        </div>
+          <div v-if="identity>=0">
+            <p style="color: white">后台管理</p>
+          </div>
 
+        </div>
       </MenuItem>
       <MenuItem name="5" style="float: right">
         {{username}}
@@ -48,12 +48,14 @@ export default {
     return {
       username:'',
       activeIndex: '',
+      identity:'',
       tagList: [],
       videoInfo:[],
       curPage:1,
       pageSize:8,
       total:0,
       searchTitle:'',
+
 
     }
 
@@ -73,8 +75,8 @@ export default {
         localStorage.setItem("collegeId", data.data.collegeId);
         localStorage.setItem("collegeName", data.data.collegeName);
         localStorage.setItem("username", data.data.name);
-        this.$router.push('/VideoManage');
-
+        localStorage.setItem("identity",data.data.identity);
+        location.reload();
       } else {
         sessionStorage.clear();
         localStorage.clear();
@@ -106,6 +108,7 @@ export default {
   mounted() {
     var code = this.getQueryVariable("code");
     this.username = localStorage.getItem("username")===null?"未登陆":localStorage.getItem("username")
+    this.identity = localStorage.getItem("identity")
     console.log(code);
     if (code&&this.username==="未登陆") {
       // alert(document.location.href.split("?")[0]);

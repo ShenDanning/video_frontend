@@ -172,7 +172,7 @@ export function login(params){
 
 export function logout(){
   return axios.get('https://oauth.shu.edu.cn/oauth/logout', {params:{
-    retUrl:"http://127.0.0.1:8080"
+    retUrl:"http://10.10.22.106"
     }})
 }
 //前台获取分类

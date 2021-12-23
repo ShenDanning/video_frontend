@@ -15,6 +15,7 @@ import sortdemo from "../pages/home/sortdemo"
 // import demo from "../pages/admin/demo"
 import myColumn from "../pages/admin/myColumn";
 import ColumnVideos from "../pages/admin/ColumnVideos";
+import VideoPass from "../pages/manager/VideoPass";
 Vue.use(Router)
 
 export default new Router({
@@ -35,6 +36,11 @@ export default new Router({
       path: '/videoplayer',
       name: 'videoplayer',
       component: videoplayer
+    },
+    {
+      path: '/VideoPass',
+      name: 'VideoPass',
+      component: VideoPass
     },
     {
       path: '/CollectionPlayer',
