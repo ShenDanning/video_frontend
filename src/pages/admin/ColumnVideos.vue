@@ -29,8 +29,9 @@
               </Col>
             </Row>
             <el-table
-              :data="tableData"
+              :data="tableData.slice((curPage-1)*pageSize,curPage*pageSize)"
               style="width: 100%;margin-top: 10px"
+
             >
               <el-table-column
                 fixed
@@ -58,6 +59,17 @@
                 align="center"
                 label="简介"
                 width="250">
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="排序"
+              >
+                <template slot-scope="scope">
+                  <el-button type="primary" icon="el-icon-arrow-up" circle size="mini" @click="up"></el-button>
+                  <el-button type="info" icon="el-icon-arrow-down" circle size="mini" @click="down"></el-button>
+                </template>
+
+
               </el-table-column>
               <el-table-column
                 fixed="right"
@@ -95,7 +107,7 @@
                 :total ="total"
                 style="padding:30px 0; text-align:center;"
                 layout="total,prev,pager,next,jumper"
-                @current-change="searchTree">
+                @current-change="handleCurrentChange">
               </el-pagination>
             </div>
 
@@ -194,7 +206,7 @@ import {
   setPublish,
   getTypeList, getVideoByType,
   uploadVideoToServer,
-  getVideoByColumn, editVideo, editPicture, addVideo, deleteVideo
+  getVideoByColumn, editVideo, editPicture, addVideo, deleteVideo, getAllVideoByColumn
 } from "../../api/api";
 export default {
   name: "VideoManange",
@@ -218,7 +230,7 @@ export default {
       username:'',
       columnId:'',
       curPage:1,
-      pageSize:6,
+      pageSize:2,
       total:0,
       searchTitle:'',
       typeList:[{
@@ -524,13 +536,16 @@ export default {
     },
 
     searchTree(val){
-      // this.curPage = val
-      this.getVideoByColumn(val)
+      this.getVideoByColumn();
+    },
+    handleCurrentChange(newPage) {
+      // 页码改变触发
+      alert(newPage)
+      this.curPage = newPage
     },
 
-
-    async getVideoByColumn(columnid){
-      var data = (await (getVideoByColumn(columnid,this.curPage,this.pageSize))).data;
+    async getVideoByColumn(){
+      var data = (await (getAllVideoByColumn(this.columnId))).data;
       if(data.status === 200){
         this.tableData = data.data.videoList;
         this.total = data.data.total;
@@ -538,6 +553,12 @@ export default {
     },
     backtolast(){
       this.$router.go(-1);
+    },
+    up(){
+      alert("上移")
+    },
+    down(){
+      alert("下移")
     }
 
   },
@@ -552,11 +573,7 @@ export default {
     this.username = localStorage.getItem("username");
     this.columnId = this.$route.query.id
     this.columnName = this.$route.query.name
-    // alert(this.columnId)
-    if(this.columnId){
-      this.searchTree(this.columnId)
-      // this.getTypeList()
-    }
+    this.getVideoByColumn();
 
 
 

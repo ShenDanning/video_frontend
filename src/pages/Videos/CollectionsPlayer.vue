@@ -11,53 +11,67 @@
       </Menu>
     </Header>
     <Content :style="{padding: '24px',margin: '88px 8% 20px',  background: '#fff'}">
-      <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">返回上一级</a></el-breadcrumb-item>
-        <el-breadcrumb-item>视频播放</el-breadcrumb-item>
-        <el-breadcrumb-item>正在播放：{{currentVideo}}</el-breadcrumb-item>
-      </el-breadcrumb>
-      <Row type="flex"  align="top" class="code-row-bg" style="margin-top: 20px">
-        <Col span="17" >
-          <video-player   class="video-player vjs-custom-skin"
-                          ref="videoPlayer" :options="playerOptions" :playsinline="true"
-                          customEventName="customstatechangedeventname"
-                          @play="onPlayerPlay($event)"
-                          @pause="onPlayerPause($event)"
-                          @ended="onPlayerEnded($event)"
-          >
-          </video-player>
-        </Col>
-        <Col span="6" offset="1" style="text-align: left">
-          <h2>
-            选集
-          </h2>
-          <el-card shadow="never" class="infinite-list" v-infinite-scroll="load"  style="overflow:auto;margin-top: 20px;padding:0;background-color: #f8f9fb;height: 380px">
-            <Row  v-for="item in tableData" :key="item.id" style="overflow:auto" class="infinite-list-item">
-              <el-button  size="small" style="width: 100%;margin-top: 2px;text-align: left" autofocus
-                         @click="playVideo(item.url,item.id,item.title)"
-              >{{item.title}}</el-button>
-            </Row>
 
-          </el-card>
-        </Col>
-      </Row>
-      <Row style="margin-top: 20px">
-        <Col span="5">
-          <el-card :body-style="{ padding: '0px' }">
-            <img :src="collectionPicture" class="image">
-          </el-card>
+      <div v-if="total===0">
 
-        </Col>
-        <Col Col span="17">
-          <el-card  shadow="never" style="border: 0" >
-            <h1 style="text-align: left">{{collectionName}}</h1>
-            <br>
-            <p style="text-align: left">简介：{{collectionDescription }}</p>
+        <el-empty description="该合集暂时没有视频">
+          <el-breadcrumb separator-class="el-icon-arrow-right" style="text-align: center">
+            <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">返回上一级</a></el-breadcrumb-item>
 
-          </el-card>
-        </Col>
+          </el-breadcrumb>
+        </el-empty>
 
-      </Row>
+      </div>
+      <div v-else>
+        <el-breadcrumb separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">返回上一级</a></el-breadcrumb-item>
+          <el-breadcrumb-item>视频播放</el-breadcrumb-item>
+          <el-breadcrumb-item>正在播放：{{currentVideo}}</el-breadcrumb-item>
+        </el-breadcrumb>
+        <Row type="flex"  align="top" class="code-row-bg" style="margin-top: 20px">
+          <Col span="17" >
+            <video-player   class="video-player vjs-custom-skin"
+                            ref="videoPlayer" :options="playerOptions" :playsinline="true"
+                            customEventName="customstatechangedeventname"
+                            @play="onPlayerPlay($event)"
+                            @pause="onPlayerPause($event)"
+                            @ended="onPlayerEnded($event)"
+            >
+            </video-player>
+          </Col>
+          <Col span="6" offset="1" style="text-align: left">
+            <h2>
+              选集
+            </h2>
+            <el-card shadow="never" class="infinite-list" v-infinite-scroll="load"  style="overflow:auto;margin-top: 20px;padding:0;background-color: #f8f9fb;height: 380px">
+              <Row  v-for="item in tableData" :key="item.id" style="overflow:auto" class="infinite-list-item">
+                <el-button  size="small" style="width: 100%;margin-top: 2px;text-align: left" autofocus
+                            @click="playVideo(item.url,item.id,item.title)"
+                >{{item.title}}</el-button>
+              </Row>
+
+            </el-card>
+          </Col>
+        </Row>
+        <Row style="margin-top: 20px">
+          <Col span="5">
+            <el-card :body-style="{ padding: '0px' }">
+              <img :src="collectionPicture" class="image">
+            </el-card>
+
+          </Col>
+          <Col Col span="17">
+            <el-card  shadow="never" style="border: 0" >
+              <h1 style="text-align: left">{{collectionName}}</h1>
+              <br>
+              <p style="text-align: left">简介：{{collectionDescription }}</p>
+
+            </el-card>
+          </Col>
+
+        </Row>
+      </div>
+
 
 
 
@@ -152,6 +166,7 @@ export default {
       url:'',
       collectionDescription:'',
       collectionName:'',
+      total:0,
 
     }
   },
@@ -184,6 +199,7 @@ export default {
     async getVideoByColumn(columnid){
       var data = (await (getVideoByColumn(columnid,1,1000))).data;
       if(data.status === 200){
+        this.total = data.data.videoList.length;
         this.tableData = data.data.videoList;
         this.playerOptions['sources'][0]['src'] = data.data.videoList[0]["url"];
         this.videoInfo.id = data.data.videoList[0]["id"];

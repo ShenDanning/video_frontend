@@ -197,7 +197,6 @@ export default {
       // alert(this.activeIndex)
 
       var tag=this.activeIndex===100?0:this.activeIndex;
-
       var data = (await (getPublishedVideo(this.searchTitle,tag,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.videoInfo = data.data.videoList;

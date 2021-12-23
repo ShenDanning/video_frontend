@@ -95,6 +95,15 @@ export function getVideoByColumn(collectionId,curPage,pageSize) {
       }
     })
 }
+export function getAllVideoByColumn(collectionId) {
+  return axios.get('/v1/personal/getAllVideoByCollectionId',
+    {
+      params:{
+        'collectionId':collectionId
+      }
+    })
+}
+
 export function addVideo(params,config){
   return axios.post('/v1/collections/uploadVideo',params,config)
 }

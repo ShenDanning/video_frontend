@@ -141,7 +141,7 @@
                 :total ="total"
                 style="padding:30px 0; text-align:center;"
                 layout="total,prev,pager,next,jumper"
-                @current-change="searchTree">
+                @current-change="getAllVideo">
               </el-pagination>
             </div>
 
@@ -639,23 +639,6 @@ export default {
         location.reload()
       });
     },
-    // cancelPublishRow(index,rows) {
-    //   this.$confirm('取消后你的视频将仅自己可见，是否继续?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning'
-    //   }).then(() => {
-    //     this.videoPublish.videoId = rows.id
-    //     this.videoPublish.tag = this.tagInfo.id
-    //     // this.getTagList();
-    //     this.undoSetPublish()
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '已发布'
-    //     });
-    //   });
-    // },
     async getTagList(){
       var data  = (await(getTagList())).data;
       if(data.status===200){
@@ -757,8 +740,8 @@ export default {
     },
 
     searchTree(){
-      // this.curPage = val
-      this.getAllVideo()
+      //this.curPage = val
+      this.getAllVideo(1)
     },
 
     async getAllVideo(val){
