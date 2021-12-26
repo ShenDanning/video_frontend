@@ -103,6 +103,54 @@ export function getAllVideoByColumn(collectionId) {
       }
     })
 }
+export function getVideoByCollectionId(collectionId,curPage,pageSize) {
+  return axios.get('/v1/getVideoByCollectionId',
+    {
+      params:{
+        'collectionId':collectionId,
+        'curPage':curPage,
+        'pageSize':pageSize
+      }
+    })
+}
+// 上移下移
+export function setUp(videoId) {
+  return axios.get('/v1/collections/setUp',
+    {
+      params:{
+        'videoId':videoId
+      }
+    })
+}
+export function setDown(videoId) {
+  return axios.get('/v1/collections/setDown',
+    {
+      params:{
+        'videoId':videoId
+      }
+    })
+}
+
+// 获取所有待审核视频
+export function getAllVideoToAudit(curPage,pageSize) {
+  return axios.get('/v1/admin/getAllVideoToAudit',
+    {
+      params:{
+        'curPage':curPage,
+        'pageSize':pageSize
+      }
+    })
+}
+//获取所有审核通过的视频
+export function getPublished2Video(curPage,pageSize) {
+  return axios.get('/v1/public/getPublishedVideo',
+    {
+      params:{
+        'curPage':curPage,
+        'pageSize':pageSize
+      }
+    })
+}
 
 export function addVideo(params,config){
   return axios.post('/v1/collections/uploadVideo',params,config)
@@ -175,6 +223,24 @@ export function addType(typeName){//如果前端没有title则相当于按type�
     }
   })
 }
+//获取所有待审核的专栏
+export function getAudit(curPage,pageSize){//如果前端没有title则相当于按type查询，有title则相当于按title查询
+  return axios.get('/v1/collections/getAudit',{
+    params:{
+      'curPage':curPage,
+      'pageSize':pageSize
+    }
+  })
+}
+//获取所有审核通过的专栏
+export function getPublishedAudit(curPage,pageSize){//如果前端没有title则相当于按type查询，有title则相当于按title查询
+  return axios.get('/v1/collections/getPublished',{
+    params:{
+      'curPage':curPage,
+      'pageSize':pageSize
+    }
+  })
+}
 export function login(params){
   return axios.post('/v1/login',params)
 }
@@ -189,7 +255,7 @@ export function getTagList(){
   return axios.get('/v1/public/getTagList');
 }
 
-//获取已发布视频，当title不为空时相当于按标题查找，当tag不为空时相当于按tag查找
+// 获取已发布视频，当title不为空时相当于按标题查找，当tag不为空时相当于按tag查找
 export function getPublishedVideo(title,tag,curPage,pageSize){
   return axios.get('/v1/public/getPublishedVideo',{
     params:{

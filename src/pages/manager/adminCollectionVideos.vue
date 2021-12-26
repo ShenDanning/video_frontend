@@ -8,25 +8,27 @@
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
-<!--            <el-breadcrumb separator-class="el-icon-arrow-right">-->
-<!--              <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">视频审核</a></el-breadcrumb-item>-->
-<!--              <el-breadcrumb-item>{{ columnName }}</el-breadcrumb-item>-->
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">专栏审核</a></el-breadcrumb-item>
+              <el-breadcrumb-item>{{ columnName }}</el-breadcrumb-item>
 
-<!--            </el-breadcrumb>-->
-            <Menu mode="horizontal"  active-name="1" style="z-index: 0">
-              <MenuItem name="1"  @click.native="getAllVideoToAudit" >
-                <Icon type="ios-paper" />
-                待审核
-              </MenuItem>
-              <MenuItem name="2" @click.native="getPublished2Video " >
-                <Icon type="ios-people" />
-                已审核
-              </MenuItem>
-            </Menu>
+            </el-breadcrumb>
+            <Row style="margin-top:30px">
+              <Col span="24">
 
+                <Input
+                  v-model="searchTitle"
+                  :search="true"
+                  suffix="ios-search"
+                  placeholder="请输入视频标题"
+                  style="width: auto;float: right"
+                  @on-search="searchTree" />
+              </Col>
+            </Row>
             <el-table
               :data="tableData.slice((curPage-1)*pageSize,curPage*pageSize)"
               style="width: 100%;margin-top: 10px;z-index: 0"
+
             >
               <el-table-column
                 fixed
@@ -35,14 +37,6 @@
                 label="标题"
                 width="200"
                 show-overflow-tooltip>
-              </el-table-column>
-              <el-table-column
-                prop="picture"
-                label="封面"
-                width="100">
-                <template slot-scope="scope">
-                  <img :src="scope.row.picture" style="height:40px">
-                </template>
               </el-table-column>
               <el-table-column
                 align="center"
@@ -64,36 +58,12 @@
                 width="250">
               </el-table-column>
               <el-table-column
-                prop="tag"
-                align="center"
-                label="类型"
-                width="100">
-              </el-table-column>
-              <el-table-column
                 fixed="right"
                 label="操作"
-                width="150"
+                width="200"
                 align="center"
               >
                 <template slot-scope="scope">
-                  <el-button v-if="scope.row.publish==1"
-                    @click.native.prevent="getRow(scope.$index,scope.row,0)"
-                    type="text"
-                    size="small">
-                    拒绝
-                  </el-button>
-                  <el-button v-else
-                             @click.native.prevent="getRow(scope.$index,scope.row,0)"
-                             type="text"
-                             size="small">
-                    取消通过
-                  </el-button>
-                  <el-button v-if="scope.row.publish==1"
-                             @click.native.prevent="getRow(scope.$index,scope.row,1)"
-                             type="text"
-                             size="small">
-                    通过
-                  </el-button>
 
                   <el-button
                     @click.native.prevent="getRow(scope.$index,scope.row,2)"
@@ -115,8 +85,6 @@
                 @current-change="handleCurrentChange">
               </el-pagination>
             </div>
-
-            <!--            上传视频-->
             <Modal
               v-model="modal2"
               title="视频预览"
@@ -149,10 +117,12 @@ import SideMenu from "../admin/SideMenu";
 
 
 import {
+  addType,
   setPublish,
+  getTypeList, getVideoByType,
   uploadVideoToServer,
-  getVideoByColumn, editVideo, editPicture, addVideo, deleteVideo, getAllVideoByColumn,
-  setUp, setDown, getAllVideoToAudit, getPublished2Video, getTagList
+  editVideo, editPicture, addVideo, deleteVideo, getAllVideoByColumn,
+  setUp,setDown
 } from "../../api/api";
 export default {
   name: "VideoManange",
@@ -161,7 +131,6 @@ export default {
   data(){
 
     return{
-      whetherShow:1,
       loading:false,
       percentage:0,
       columnName:'',
@@ -170,7 +139,7 @@ export default {
       radio:'1',
       modal1: false,
       modal2:false,
-      // modal3: false,
+      modal3: false,
       modal4:false,
       modal5:false,
       modal6:false,
@@ -209,8 +178,6 @@ export default {
         typeId:'',
         type: '',
         url:'',
-        tag:'',
-
       }],
       columnAdd: {
         name:'',
@@ -286,6 +253,15 @@ export default {
   },
   methods: {
 
+    cancel3(){
+      this.$refs.vueMiniPlayer.pause();
+      // this.videoInfo.url.clear()
+      this.$Message.info('已取消');
+    },
+
+    cancel () {
+      this.$Message.info('已取消');
+    },
     //时间戳格式化
     dateFormat(row, column) {
       var date = row[column.property];
@@ -296,108 +272,89 @@ export default {
     },
 
 
+    //保存图片到后台
+    async imgAdd($file){
+
+      this.columnEdit.picture = $file;
+      this.columnAdd.picture = $file;
+    },
+
+    addShow(){
+      this.modal3 = true
+    },
+
     getRow(index, rows,val) {
-      var tagid=''
-      for(var i in this.tagInfo){
-        // alert(this.tagInfo[i])
-        if(this.tagInfo[i]["tag"] == rows.tag){
-          tagid = this.tagInfo[i]["id"]
-        }
-      }
-      if(val===0){
-        //拒绝
-        this.undoSetPublish(rows.id,-1,tagid)
-        // this.videoInfo.type = rows.type;
-      }else if(val===2){
+      if(val===2){
         this.modal2=true;
         this.videoInfo.id=rows.id;
         this.videoInfo.url=rows.url;
-      }else if (val === 1){
-        //通过
-        this.setPublish(rows.id,2,tagid)
-
-        // this.videoInfo.id=rows.id;
-        // this.modal4 = true
+      }else if (val === 4){
+        this.videoInfo.id=rows.id;
+        this.modal4 = true
       }
     },
-    async setPublish(id,isPublish,tag){
 
-      // alert(this.videoUpload.type);
-      var formdata = new FormData();
-      formdata.append('videoId', id);
-      formdata.append('publish',isPublish);
-      formdata.append('tag',tag);
-      var data =(await setPublish(formdata)).data;
-      if(data.status===200){
-        this.$Message.success(data.msg);
-        this.getAllVideoToAudit();
-      }else{
-        this.$message.error("发布失败！");
-      }
+    searchTree(val){
+      this.getVideoByColumn();
     },
-    async undoSetPublish(id,isPublish,tag){
-      // alert(this.videoUpload.type);
-      var formdata = new FormData();
-      formdata.append('videoId', id);
-      formdata.append('publish',isPublish);
-      formdata.append('tag',tag);
-      var data =(await setPublish(formdata)).data;
-      if(data.status===200){
-        this.$Message.success("拒绝成功！");
-        this.getAllVideoToAudit();
-      }else{
-        this.$message.error("发布失败！");
-      }
-    },
-    async getTagList(){
-      var data  = (await(getTagList())).data;
-      if(data.status===200){
-        this.tagInfo = data.data.tagList;
-      }else{
-        this.$message.error("删除失败")}
-    },
-
-
     handleCurrentChange(newPage) {
       // 页码改变触发
       alert(newPage)
       this.curPage = newPage
     },
 
-    async getAllVideoToAudit(){
-      var data = (await (getAllVideoToAudit(this.curPage,this.pageSize))).data;
+    async getVideoByColumn(){
+      var data = (await (getVideoByCollectionId(this.columnId,this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.tableData = data.data.videoList;
         this.total = data.data.total;
-      }
-    },
-    // getPublished2Video
-    async getPublished2Video(){
-      var data = (await (getPublished2Video(this.curPage,this.pageSize))).data;
-      if(data.status === 200){
-        this.whetherShow = 0
-        this.tableData = data.data.videoList;
-        this.total = data.data.total;
-        // console.log(this.tableData)
       }
     },
     backtolast(){
       this.$router.go(-1);
     },
-
+    async setup(id){
+      var data = (await (setUp(id))).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        this.searchTree()
+      }else{
+        this.$message.error(data.msg);
+        this.searchTree()
+      }
+    },
+    async setdown(id){
+      var data = (await (setDown(id))).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        this.searchTree()
+      }else{
+        this.$message.error(data.msg);
+        this.searchTree()
+      }
+    },
+    up(id){
+      this.setup(id)
+    },
+    down(id){
+      // alert("下移")
+      this.setdown(id)
+    },
 
 
   },
 
 
 
+  beforeRemove(file, fileList) {
+    return this.$confirm(`确定移除 ${ file.name }？`);
+  },
 
   mounted() {
     this.username = localStorage.getItem("username");
     this.columnId = this.$route.query.id
     this.columnName = this.$route.query.name
-    this.getAllVideoToAudit();
-    this.getTagList();
+    this.getVideoByColumn();
 
 
 

@@ -41,16 +41,36 @@
           <span>视频广场</span>
         </MenuItem>
         <div v-if="identity>=1">
-          <Submenu name="6" to="">
+<!--          <MenuItem name="6" to = "/videoPass">-->
+<!--            <Icon type="md-person"></Icon>-->
+<!--            <span>视频审核</span>-->
+<!--          </MenuItem>-->
+          <Submenu name="6" to="/videoPass">
             <template slot="title">
-              管理员
+              <Icon type="md-person" />
+              视频审核
             </template>
+            <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
+            <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
             <template>
               <MenuItem name="6-0" to="/videoPass">视频审核</MenuItem>
+              <MenuItem name="6-1" to="/collectionPass">专栏审核</MenuItem>
+<!--              <MenuItem name="6-2" to="/peopleManage">人员管理</MenuItem>-->
 
             </template>
             <!--          v-for="item in tagInfo"-->
           </Submenu>
+<!--          <Submenu name="6" to="">-->
+<!--            <template slot="title">-->
+<!--              <Icon type="md-person" />-->
+<!--              管理员-->
+<!--            </template>-->
+<!--            <template>-->
+<!--              <MenuItem name="6-0" to="/videoPass">视频审核</MenuItem>-->
+
+<!--            </template>-->
+<!--            &lt;!&ndash;          v-for="item in tagInfo"&ndash;&gt;-->
+<!--          </Submenu>-->
         </div>
 
 
@@ -100,6 +120,7 @@ export default {
     //获取分类
     this.getTypeList();
     this.identity = localStorage.getItem("identity")
+    // alert("identity is"+this.identity)
 
   }
 }

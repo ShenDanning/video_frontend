@@ -45,14 +45,14 @@
                 align="center"
                 prop="views"
                 label="播放量"
-                width="150">
+                width="70">
               </el-table-column>
               <el-table-column
                 prop="uploadTime"
                 label="上传时间"
                 :formatter="dateFormat"
                 align="center"
-                width="150">
+                width="140">
               </el-table-column>
               <el-table-column
                 prop="description"
@@ -62,11 +62,30 @@
               </el-table-column>
               <el-table-column
                 align="center"
+                label="发布状态"
+                width="100"
+                show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <el-switch
+                    v-model="scope.row.publish"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    :active-value="2"
+                    :inactive-value="0"
+                    @change="changeSwitch(scope.row,scope.$index)"
+                  >
+                  </el-switch>
+
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
                 label="排序"
+                width="100"
               >
                 <template slot-scope="scope">
-                  <el-button type="primary" icon="el-icon-arrow-up" circle size="mini" @click="up"></el-button>
-                  <el-button type="info" icon="el-icon-arrow-down" circle size="mini" @click="down"></el-button>
+                  <el-button type="primary" icon="el-icon-arrow-up" circle size="mini" @click="up(scope.row.id)"></el-button>
+                  <el-button type="info" icon="el-icon-arrow-down" circle size="mini" @click="down(scope.row.id)"></el-button>
                 </template>
 
 
@@ -167,17 +186,6 @@
                 </el-form-item>
 
 
-<!--                <el-form-item label="视频分类">-->
-<!--                  <el-select v-model="videoEdit.type" placeholder="请选择">-->
-<!--                    <el-option-->
-<!--                      v-for="item in typeList"-->
-<!--                      :key="item.id"-->
-<!--                      :label="item.type"-->
-<!--                      :value="item.id">-->
-<!--                    </el-option>-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
-
               </el-form>
             </Modal>
             <div class="loading" v-if="loading" >
@@ -206,7 +214,8 @@ import {
   setPublish,
   getTypeList, getVideoByType,
   uploadVideoToServer,
-  getVideoByColumn, editVideo, editPicture, addVideo, deleteVideo, getAllVideoByColumn
+  getVideoByColumn, editVideo, editPicture, addVideo, deleteVideo, getAllVideoByColumn,
+  setUp, setDown, getPersonalVideoByTitle
 } from "../../api/api";
 export default {
   name: "VideoManange",
@@ -230,7 +239,7 @@ export default {
       username:'',
       columnId:'',
       curPage:1,
-      pageSize:2,
+      pageSize:6,
       total:0,
       searchTitle:'',
       typeList:[{
@@ -336,7 +345,44 @@ export default {
     }
   },
   methods: {
-
+    changeSwitch(row,index){
+      if(row.publish===0){
+        this.undoSetPublish(row.id);
+      }else{
+        this.setPublish(row.id)
+      }
+    },
+    async setPublish(id){
+      this.videoPublish.publish = 1;
+      this.videoPublish.tag = this.tagInfo.id
+      // alert(this.videoUpload.type);
+      var formdata = new FormData();
+      formdata.append('videoId', id);
+      formdata.append('publish',2);
+      formdata.append('tag',-1);
+      var data =(await setPublish(formdata)).data;
+      if(data.status===200){
+        this.$Message.success("发布成功！");
+        this.getVideoByColumn()
+      }else{
+        this.$message.error("发布失败！");
+      }
+    },
+    async undoSetPublish(id){
+      // alert(this.videoUpload.type);
+      var formdata = new FormData();
+      formdata.append('videoId',id);
+      formdata.append('publish',-1);
+      formdata.append('tag',-1);
+      var data =(await setPublish(formdata)).data;
+      if(data.status===200){
+        this.$Message.success("取消发布成功");
+        this.getVideoByColumn()
+        // this.getAllVideo(1);
+      }else{
+        this.$message.error("取消发布失败");
+      }
+    },
     async beforeUpload(file){
       this.loading = true;
       this.tips = '正在上传中……';
@@ -554,12 +600,34 @@ export default {
     backtolast(){
       this.$router.go(-1);
     },
-    up(){
-      alert("上移")
+    async setup(id){
+      var data = (await (setUp(id))).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        this.searchTree()
+      }else{
+        this.$message.error(data.msg);
+        this.searchTree()
+      }
     },
-    down(){
-      alert("下移")
-    }
+    async setdown(id){
+      var data = (await (setDown(id))).data;
+      if(data.status===200){
+        this.$Message.success(data.msg);
+        this.searchTree()
+      }else{
+        this.$message.error(data.msg);
+        this.searchTree()
+      }
+    },
+    up(id){
+      this.setup(id)
+    },
+    down(id){
+      // alert("下移")
+      this.setdown(id)
+    },
+
 
   },
 

@@ -10,7 +10,7 @@ import ElementUI from 'element-ui';
 import ViewUI from 'view-design';
 Vue.prototype.$axios = axios;
 var axios = require('axios');
-//var drag = require('drag2sortable/drag2sortable.jquery.js');
+// var drag = require('drag2sortable/drag2sortable.jquery.js');
 axios.defaults.baseURL = 'http://10.10.22.106';
 //引入完成之后需要挂载到vue上
 import 'element-ui/lib/theme-chalk/index.css';
@@ -48,7 +48,7 @@ axios.interceptors.response.use(
   response => {
     //当返回信息为未登录或者登录失效的时候重定向为登录页面
 
-    if (response.data.status === 403) {
+    if (response.data.status === 401) {
       router.push({
         path: "/",
         query: { redirect: router.currentRoute.fullPath }//从哪个页面跳转
@@ -59,7 +59,7 @@ axios.interceptors.response.use(
   error => {
     router.push({
       path: "/",
-      query: {redirect: router.currentRoute.fullPath} //从哪个页面跳转
+      query: {} //从哪个页面跳转
     })
     return Promise.reject(error)
   }

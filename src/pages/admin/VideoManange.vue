@@ -53,23 +53,22 @@
               <!--              </el-table-column>-->
               <el-table-column
                 align="center"
-                label="是否已发布"
+                label="发布状态"
                 width="180"
                 show-overflow-tooltip>
-                <!--                <template slot-scope="scope">-->
-                <!--                  <el-tag size="medium" v-if="scope.row.publish =='1'">已发布</el-tag>-->
-                <!--                  <el-tag size="medium" v-else>未发布</el-tag>-->
-                <!--                </template>-->
                 <template slot-scope="scope">
+                  <el-tag type="warning" v-if="scope.row.publish =='1'">审核中</el-tag>
                   <el-switch
+                    v-else
                     v-model="scope.row.publish"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
-                    :active-value="1"
+                    :active-value="2"
                     :inactive-value="0"
                     @change="changeSwitch(scope.row,scope.$index)"
                   >
                   </el-switch>
+
                 </template>
               </el-table-column>
               <el-table-column
@@ -562,8 +561,8 @@ export default {
       formdata.append('tag',this.videoPublish.tag);
       var data =(await setPublish(formdata)).data;
       if(data.status===200){
-        this.$Message.success(data.msg);
-        // this.getAllVideo(1);
+        this.$Message.success("已提交管理员审核！");
+        this.getAllVideo();
       }else{
         this.$message.error("发布失败！");
       }

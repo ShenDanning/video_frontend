@@ -65,21 +65,41 @@
                 align="center"
                 width="200">
               </el-table-column>
+<!--              <el-table-column-->
+<!--                align="center"-->
+<!--                label="是否已发布"-->
+<!--                width="180"-->
+<!--                show-overflow-tooltip>-->
+<!--                <template slot-scope="scope">-->
+<!--                  <el-switch-->
+<!--                    v-model="scope.row.publish"-->
+<!--                    active-color="#13ce66"-->
+<!--                    inactive-color="#ff4949"-->
+<!--                    :active-value="1"-->
+<!--                    :inactive-value="0"-->
+<!--                    @change="changeSwitch(scope.row,scope.$index)"-->
+<!--                  >-->
+<!--                  </el-switch>-->
+<!--                </template>-->
+<!--              </el-table-column>-->
               <el-table-column
                 align="center"
-                label="是否已发布"
+                label="发布状态"
                 width="180"
                 show-overflow-tooltip>
                 <template slot-scope="scope">
+                  <el-tag type="warning" v-if="scope.row.publish =='1'">审核中</el-tag>
                   <el-switch
+                    v-else
                     v-model="scope.row.publish"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
-                    :active-value="1"
+                    :active-value="2"
                     :inactive-value="0"
                     @change="changeSwitch(scope.row,scope.$index)"
                   >
                   </el-switch>
+
                 </template>
               </el-table-column>
               <el-table-column
@@ -456,7 +476,6 @@ export default {
       }else{
         this.publishRow(index,row)
       }
-
     },
     async setPublish(){
       this.columnPublish.publish = 1;
@@ -466,7 +485,8 @@ export default {
       formdata.append('publish',this.columnPublish.publish);
       var data =(await columnPublish(formdata)).data;
       if(data.status===200){
-        this.$Message.success(data.msg);
+        this.$Message.success("已提交管理员审核！");
+        this.getAllColumns();
         // this.getAllVideo(1);
       }else{
         this.$message.error("发布失败！");

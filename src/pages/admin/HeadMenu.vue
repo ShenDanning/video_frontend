@@ -23,7 +23,7 @@
 }
 </style>
 <template>
-      <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'4'}">
+      <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'6'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
           <div class="layout-logo">
             <img src="https://i.postimg.cc/ZnmmJHB9/shu.png" style="height: 40px">
