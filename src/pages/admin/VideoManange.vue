@@ -826,7 +826,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .layout{
   border: 1px solid #d7dde4;
   background: #f5f7f9;

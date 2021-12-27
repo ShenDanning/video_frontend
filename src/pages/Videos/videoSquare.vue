@@ -169,7 +169,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .time {
   font-size: 13px;
   color: #999;
@@ -217,5 +217,13 @@ export default {
   overflow: hidden;
   text-overflow:ellipsis;
 }
-
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
+}
 </style>
