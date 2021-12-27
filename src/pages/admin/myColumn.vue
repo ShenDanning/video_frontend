@@ -3,11 +3,11 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider hide-trigger class="sider">
+          <SideMenu  v-bind:activeName="activeName"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+          <Content :style="{padding: '24px',margin: '88px 0 0 200px',top:'64px', minHeight: '800px', background: '#fff'}">
 
             <Row>
               <Col span="24">
@@ -89,8 +89,24 @@
                 show-overflow-tooltip>
                 <template slot-scope="scope">
                   <el-tag type="warning" v-if="scope.row.publish =='1'">审核中</el-tag>
+                  <el-tag type="danger" v-if="scope.row.publish =='3'">未通过</el-tag>
+
+                  <el-tooltip   v-if="scope.row.publish =='3'" class="item" effect="dark" content="重新发布" placement="top">
+                    <el-switch
+
+                      v-model="scope.row.publish"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      :active-value="2"
+                      :inactive-value="3"
+                      @change="changeSwitch(scope.row,scope.$index)"
+
+                    >
+                    </el-switch>
+                  </el-tooltip>
+
                   <el-switch
-                    v-else
+                    v-if="scope.row.publish !='3'&&scope.row.publish !='1'"
                     v-model="scope.row.publish"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
@@ -247,6 +263,7 @@ export default {
   data(){
 
     return{
+      activeName:'5',
       loading:false,
       percentage:0,
       tips:'',
@@ -657,22 +674,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .layout{
   border: 1px solid #d7dde4;
   background: #f5f7f9;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-}
-.uploadfile{
-  width: 200px;
-  height: 200px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -100px;
-  margin-top: -100px;
 }
 .loading{
   position: absolute;
@@ -701,4 +709,24 @@ export default {
   margin-left: -100px;
   margin-top: -150px;
 }
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
+}
+
+
+.item {
+  margin: 4px;
+}
+
+.left .el-tooltip__popper,
+.right .el-tooltip__popper {
+  padding: 8px 10px;
+}
+
 </style>

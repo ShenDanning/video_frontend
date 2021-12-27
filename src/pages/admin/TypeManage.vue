@@ -3,11 +3,11 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider hide-trigger class="sider">
+          <SideMenu  v-bind:activeName="activeName"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Content  :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+          <Content  :style="{padding: '24px',margin: '88px 0 0 200px',top:'64px', minHeight: '800px', background: '#fff'}">
             <Row>
               <Button type="primary"  icon="ios-construct" style="float: left"
                       @click.native.prevent="typeShow()"
@@ -90,7 +90,7 @@
               title="分类信息"
               @on-ok="ok5"
               @on-cancel="cancel">
-              <el-form label-position="left" label-width="80px" :model="TypeInfo">
+              <el-form label-position="left" label-width="80px">
                 <el-form-item label="分类名">
                   <el-input v-model="typeInfo.typeName"></el-input>
                 </el-form-item>
@@ -122,6 +122,7 @@ export default {
   components: {VideoList, SideMenu, HeadMenu},
   data() {
     return {
+      activeName:'3',
       currentVideo:'',
       tableData:[{
         type:'',
@@ -133,6 +134,7 @@ export default {
         typeId:'',
       },
       typeList:[],
+      TypeInfo:[],
 
       curPage:1,
       pageSize:8,
@@ -163,6 +165,9 @@ export default {
     },
     ok5(){
       this.addType()
+    },
+    cancel(){
+      this.$Message.info("已取消")
     },
     async addType(){
       var data = (await (addType(this.typeInfo.typeName))).data;
@@ -231,20 +236,7 @@ export default {
 
       return moment(date).format("YYYY-MM-DD HH:mm:ss");
     },
-    // openURL(item){
-    //
-    //   this.$router.push({name:'videoSquare',
-    //     query:{
-    //       url: item.url,
-    //       id: item.id,
-    //       title: item.title,
-    //       description:item.description,
-    //       author:item.author,
-    //       uploadTime:item.uploadTime,
-    //       type:item.type
-    //     }})
-    //
-    // },
+
     async changePage(val){
       if(val){
         this.curPage = val;
@@ -260,97 +252,19 @@ export default {
       }
     },
 
-    // searchVideo(key){
-    //   this.showVideoByType(1)
-    // },
 
-    // async showVideoByType(val){
-    //
-    //   if(val){
-    //     this.curPage = val;
-    //   }
-    //   // alert(this.activeIndex)
-    //   var typeId=this.activeIndex;
-    //   var data = (await (getVideoByType(this.searchTitle,typeId,this.curPage,this.pageSize))).data;
-    //   if(data.status === 200){
-    //     this.videoInfo = data.data.videoList;
-    //
-    //     this.total = data.data.total;
-    //   }
-    //   this.searchTitle=''
-    //
-    // },
-
-    // SelectType(key){
-    //   if(key!=-1){
-    //     this.activeIndex=key;
-    //   }
-    //   this.showVideoByType(1)
-    // },
-    // onPlayerPause($event) {
-    //   this.isPlay = false;
-    // },
-    // onPlayerPlay($event) {
-    //   this.isPlay = true;
-    // },
-    // onPlayerEnded($event) {},
-    // onPlayerClick() {
-    //   if (this.isPlay) {
-    //     this.player.pause();
-    //   } else {
-    //     this.player.play();
-    //   }
-    // },
   }
 }
 </script>
 <style>
-.time {
-  font-size: 13px;
-  color: #999;
-}
-
-.bottom {
-  margin-top: 13px;
-  line-height: 12px;
-
-}
-
-.button {
-  padding: 0;
-  float: right;
-  font-size: 13px;
-  color: #999;
-}
-
-.image {
-  width: 100%;
-  display: block;
-}
-
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
-
-.clearfix:after {
-  clear: both
-}
-.view-text{
-  /**
-	思路：
-	1.设置inline-block属相
-	2.强制不换行
-	3.固定高度
-	4.隐藏超出部分
-	5.显示“……”
-  */
-  display: inline-block;
-  white-space: nowrap;
-  width: 100%;
-  overflow: hidden;
-  text-overflow:ellipsis;
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
 }
 
 </style>

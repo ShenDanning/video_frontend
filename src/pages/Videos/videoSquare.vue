@@ -4,8 +4,8 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider hide-trigger class="sider">
+          <SideMenu v-bind:activeName="activeName"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content  :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
@@ -36,6 +36,7 @@ export default {
   data() {
     return {
       currentVideo:'',
+      activeName:'4',
 
       typeList:[],
       // 很多参数其实没必要的，也还有很多参数没列出来，只是把我看到的所有文章做一个统计

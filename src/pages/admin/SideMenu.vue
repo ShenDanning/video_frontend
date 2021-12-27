@@ -1,6 +1,6 @@
 <template>
 
-      <Menu theme="light" width="auto" :open-names="['1']">
+      <Menu theme="light" width="auto" :active-name="activeName" :open-names="openNames">
         <MenuItem name="1" to="/home">
           <Icon type="ios-navigate"></Icon>
           <span>返回首页</span>
@@ -17,8 +17,8 @@
 <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
 <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
           <template>
-            <MenuItem name="2-0" to="/VideoManage">全部</MenuItem>
-            <MenuItem v-for="item in menuList" :key="item.id" :value="item.id" :name="'2'+item.id" @click.native.prevent="insurance(item.id)">
+            <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>
+            <MenuItem v-for="item in menuList" :key="item.id" :value="item.id" :name="'2'+item.id+1" @click.native.prevent="insurance(item.id)">
               {{ item.type }}
             </MenuItem>
           </template>
@@ -40,50 +40,38 @@
           <Icon type="logo-youtube"></Icon>
           <span>视频广场</span>
         </MenuItem>
-        <div v-if="identity>=1">
+
 <!--          <MenuItem name="6" to = "/videoPass">-->
 <!--            <Icon type="md-person"></Icon>-->
 <!--            <span>视频审核</span>-->
 <!--          </MenuItem>-->
-          <Submenu name="6" to="/videoPass">
+          <Submenu v-if="identity>=1"  name="6" to="/videoPass">
             <template slot="title">
               <Icon type="md-person" />
               视频审核
             </template>
-            <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
-            <!--          <MenuItem name="2-1" to="/VideoManage">全部</MenuItem>-->
             <template>
-              <MenuItem name="6-0" to="/videoPass">视频审核</MenuItem>
-              <MenuItem name="6-1" to="/collectionPass">专栏审核</MenuItem>
-<!--              <MenuItem name="6-2" to="/peopleManage">人员管理</MenuItem>-->
-
+              <MenuItem name="6-1" to="/videoPass">视频审核</MenuItem>
+              <MenuItem name="6-2" to="/collectionPass">专栏审核</MenuItem>
             </template>
-            <!--          v-for="item in tagInfo"-->
           </Submenu>
-<!--          <Submenu name="6" to="">-->
-<!--            <template slot="title">-->
-<!--              <Icon type="md-person" />-->
-<!--              管理员-->
-<!--            </template>-->
-<!--            <template>-->
-<!--              <MenuItem name="6-0" to="/videoPass">视频审核</MenuItem>-->
-
-<!--            </template>-->
-<!--            &lt;!&ndash;          v-for="item in tagInfo"&ndash;&gt;-->
-<!--          </Submenu>-->
-        </div>
-
-
-
       </Menu>
 
 </template>
 
 <script>
-import {getTypeList} from "../../api/api";
+import {getIdentity, getTypeList} from "../../api/api";
 
 export default {
   name: "SideMenu",
+  props: {
+
+    'activeName':String,
+    'openNames':Array
+
+  },
+
+
   data(){
     return{
       identity:0,
@@ -112,26 +100,29 @@ export default {
         // alert(data.data.typeList)
         this.menuList = data.data.typeList;
       }
+    },
+    async getIdentity(){
+      var data = (await (getIdentity())).data;
+      if(data.status ===200){
+        this.identity = data.data;
+      }
+
     }
 
   },
+
   mounted() {
 
     //获取分类
     this.getTypeList();
-    this.identity = localStorage.getItem("identity")
-    // alert("identity is"+this.identity)
+    //获取权限
+      this.getIdentity()
+
 
   }
 }
 </script>
 
-<style scoped>
-.layout{
-  border: 1px solid #d7dde4;
-  background: #f5f7f9;
-  position: relative;
-  border-radius: 4px;
-  overflow: hidden;
-}
+<style>
+
 </style>

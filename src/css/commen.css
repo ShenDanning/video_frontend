@@ -47,3 +47,13 @@
 .video-js .vjs-control-bar button{
   outline: none;
 }
+
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
+}

@@ -65,6 +65,7 @@
     data() {
       return {
         currentVideo:'',
+        isPause:false,
         // 很多参数其实没必要的，也还有很多参数没列出来，只是把我看到的所有文章做一个统计
         playerOptions: {
           height: "30%",
@@ -174,14 +175,18 @@
       },
       onPlayerPause($event) {
       this.isPlay = false;
+      this.isPause = true;
     },
 
     onPlayerPlay($event) {
+      if(!this.isPause){//如果没有暂停过
+        setViews(this.videoInfo.id)
+      }
       this.isPlay = true;
     },
 
     onPlayerEnded($event) {
-      setViews(this.videoInfo.id)
+
     },
     async setViews(id){
      await (setViews(id));

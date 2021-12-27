@@ -3,11 +3,11 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider hide-trigger class="sider">
+          <SideMenu v-bind:activeName="activeName " v-bind:openNames="['2']"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+          <Content :style="{padding: '24px',margin: '88px 0 0 200px',top:'64px', minHeight: '800px', background: '#fff'}">
 
             <Row>
               <Col span="24">
@@ -58,6 +58,11 @@
                 show-overflow-tooltip>
                 <template slot-scope="scope">
                   <el-tag type="warning" v-if="scope.row.publish =='1'">审核中</el-tag>
+
+                  <div  v-else-if="scope.row.publish =='3'" >
+                   <el-tag type="danger">未通过</el-tag>
+                  </div>
+
                   <el-switch
                     v-else
                     v-model="scope.row.publish"
@@ -68,7 +73,6 @@
                     @change="changeSwitch(scope.row,scope.$index)"
                   >
                   </el-switch>
-
                 </template>
               </el-table-column>
               <el-table-column
@@ -344,6 +348,7 @@ export default {
     return{
       loading:false,
       percentage:0,
+      activeName:'2',
       tips:'',
       url:"http://10.10.22.106/v1/uploadVideo",
       radio:'1',
@@ -821,7 +826,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .layout{
   border: 1px solid #d7dde4;
   background: #f5f7f9;
@@ -865,4 +870,15 @@ export default {
   margin-left: -100px;
   margin-top: -150px;
 }
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
+}
+
+
 </style>

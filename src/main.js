@@ -18,7 +18,8 @@ import 'vue-video-player/src/custom-theme.css'
 import 'video.js/dist/video-js.css'
 import 'view-design/dist/styles/iview.css';
 import EleUploadVideo from "vue-ele-upload-video";
-// import 'src/my-theme/index.less';
+
+import './css/commen.css'
 
 Vue.use(ViewUI);
 Vue.component(EleUploadVideo.name, EleUploadVideo);

@@ -3,12 +3,15 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider hide-trigger class="sider">
+          <SideMenu v-bind:openNames="openNames" v-bind:activeName="activeName"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item ><a  style="color:#2d8cf0">专栏审核</a></el-breadcrumb-item>
 
+            </el-breadcrumb>
             <Menu mode="horizontal"  active-name="1" style="z-index: 0">
               <MenuItem name="1"  @click.native="getAudit">
                 <Icon type="ios-paper" />
@@ -206,6 +209,8 @@ export default {
   data(){
 
     return{
+      openNames:['6'],
+      activeName:'6-2',
       audit:false,
       auditPublished:false,
       loading:false,
@@ -317,11 +322,11 @@ export default {
       // alert(this.videoUpload.type);
       var formdata = new FormData();
       formdata.append('collectionId', id);
-      formdata.append('publish','-1');
+      formdata.append('publish','3');
       var data =(await columnPublish(formdata)).data;
       if(data.status===200){
         this.$Message.success("拒绝成功！");
-        this.getAudit()
+        this.getAudit();
       }else{
         this.$message.error(data.msg);
       }
@@ -403,7 +408,7 @@ export default {
     this.columnId = this.$route.query.id
     this.columnName = this.$route.query.name
     this.getAudit();
-    this.getTagList();
+   // this.getTagList();
 
 
 
@@ -419,40 +424,13 @@ export default {
   border-radius: 4px;
   overflow: hidden;
 }
-.uploadfile{
-  width: 200px;
-  height: 200px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -100px;
-  margin-top: -100px;
-}
-.loading{
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background: black;
-  opacity: 0.8;
-  z-index: 4;
-}
-.progress{
-  width: 200px;
-  height: 200px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -100px;
-  margin-top: -100px;
-}
-.tips{
-  color: #409eff;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -100px;
-  margin-top: -150px;
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
 }
 </style>

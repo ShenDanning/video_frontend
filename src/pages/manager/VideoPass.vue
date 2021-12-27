@@ -3,16 +3,15 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider class="sider" hide-trigger>
+          <SideMenu v-bind:openNames="['6']" v-bind:activeName="'6-1'"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
-<!--            <el-breadcrumb separator-class="el-icon-arrow-right">-->
-<!--              <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">视频审核</a></el-breadcrumb-item>-->
-<!--              <el-breadcrumb-item>{{ columnName }}</el-breadcrumb-item>-->
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+              <el-breadcrumb-item ><a style="color:#2d8cf0">视频审核</a></el-breadcrumb-item>
 
-<!--            </el-breadcrumb>-->
+            </el-breadcrumb>
             <Menu mode="horizontal"  active-name="1" style="z-index: 0">
               <MenuItem name="1"  @click.native="getAllVideoToAudit" >
                 <Icon type="ios-paper" />
@@ -120,8 +119,8 @@
             <Modal
               v-model="modal2"
               title="视频预览"
-              @on-cancel="cancel3"
-              @on-ok = "cancel3"
+              @on-cancel="cancel"
+              @on-ok = "cancel"
             >
               <video style="width: 475px" :src="videoInfo.url" ref="vueMiniPlayer" controls='controls' autoplay>
               </video>
@@ -161,6 +160,8 @@ export default {
   data(){
 
     return{
+      openNames:['6'],
+      activeName:'6-1',
       whetherShow:1,
       loading:false,
       percentage:0,
@@ -285,6 +286,10 @@ export default {
     }
   },
   methods: {
+    cancel(){
+      this.$Message.info("关闭预览");
+    },
+
 
     //时间戳格式化
     dateFormat(row, column) {
@@ -306,7 +311,7 @@ export default {
       }
       if(val===0){
         //拒绝
-        this.undoSetPublish(rows.id,-1,tagid)
+        this.undoSetPublish(rows.id,3,tagid)
         // this.videoInfo.type = rows.type;
       }else if(val===2){
         this.modal2=true;
@@ -315,9 +320,6 @@ export default {
       }else if (val === 1){
         //通过
         this.setPublish(rows.id,2,tagid)
-
-        // this.videoInfo.id=rows.id;
-        // this.modal4 = true
       }
     },
     async setPublish(id,isPublish,tag){
@@ -344,7 +346,7 @@ export default {
       var data =(await setPublish(formdata)).data;
       if(data.status===200){
         this.$Message.success("拒绝成功！");
-        this.getAllVideoToAudit();
+        this.getAudit();
       }else{
         this.$message.error("发布失败！");
       }
@@ -405,7 +407,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .layout{
   border: 1px solid #d7dde4;
   background: #f5f7f9;
@@ -449,4 +451,15 @@ export default {
   margin-left: -100px;
   margin-top: -150px;
 }
+
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
+}
+
 </style>

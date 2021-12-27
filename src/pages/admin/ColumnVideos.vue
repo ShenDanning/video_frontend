@@ -3,11 +3,11 @@
     <Layout>
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff',margin:'64px 0 0',position:'fixed',height: '100%'}">
-          <SideMenu/>
+        <Sider hide-trigger class="sider">
+          <SideMenu v-bind="activeName"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">
+          <Content :style="{padding: '24px',margin: '88px 0 0 200px',top:'64px', minHeight: '800px', background: '#fff'}">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">我的专栏</a></el-breadcrumb-item>
               <el-breadcrumb-item>{{ columnName }}</el-breadcrumb-item>
@@ -224,6 +224,7 @@ export default {
   data(){
 
     return{
+      activeName:'5',
       loading:false,
       percentage:0,
       columnName:'',
@@ -692,5 +693,14 @@ export default {
   left: 50%;
   margin-left: -100px;
   margin-top: -150px;
+}
+.sider{
+  background: #fff;
+  margin:0 0 0;
+  position:fixed;
+  height: 100%;
+  bottom:0;
+  top:64px;
+  overflow: auto;
 }
 </style>

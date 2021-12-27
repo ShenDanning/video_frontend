@@ -85,6 +85,8 @@ export function deleteColumn(collectionId) {
       }
     })
 }
+
+//获取的是专栏内用选择发布的视频
 export function getVideoByColumn(collectionId,curPage,pageSize) {
   return axios.get('/v1/getVideoByCollectionId',
     {
@@ -275,4 +277,8 @@ export function getPublishedCollections(name,curPage,pageSize){
       'pageSize':pageSize
     }
   })
+}
+
+export function getIdentity(){
+  return axios.get("/v1/getIdentity");
 }

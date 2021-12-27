@@ -1,6 +1,9 @@
 <template>
   <div>
-    <Row style="margin-top: 20px">
+
+      <el-empty v-if="collectionsInfo.length==0" description="暂时没有合集"></el-empty>
+
+    <Row v-else style="margin-top: 20px">
       <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in collectionsInfo" :key="item.id">
         <el-card :body-style="{ padding: '0px' }">
           <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item.id,item.name,item.description)" >
@@ -11,7 +14,6 @@
 
             <div class="bottom clearfix">
               <span class="time" >{{ dateFormat(item.uploadTime) }}</span>
-
               <span class="button" size="mini">来自:{{item.author}}</span>
             </div>
           </div>
