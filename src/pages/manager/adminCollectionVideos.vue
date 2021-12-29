@@ -4,7 +4,7 @@
       <HeadMenu :message="username" v-if="username.length>0"></HeadMenu>
       <Layout>
         <Sider hide-trigger class="sider">
-          <SideMenu v-bind:openNames="['6']" v-bind:activeName="'1'"/>
+          <SideMenu v-bind:openNames="['6']" v-bind:activeName="'6-2'"/>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <Content :style="{padding: '24px',margin: '88px 0 0 200px', minHeight: '800px', background: '#fff'}">

@@ -1,5 +1,5 @@
 <template>
-  <Layout :style="back">
+  <Layout>
     <Header :style="{position: 'fixed', width: '100%',padding: 0,zIndex:'3'}">
       <Menu mode="horizontal" theme="dark" active-name="1">
         <div class="layout-logo">
@@ -10,7 +10,7 @@
         </MenuItem>
       </Menu>
     </Header>
-    <Content :style="{padding: '24px',margin: '88px 8% 20px',  background: '#fff'}">
+    <Content :style="{padding: '24px',margin: '88px 8% 20px',minHeight:'700px', background: '#fff'}">
 
       <div v-if="total===0">
 
