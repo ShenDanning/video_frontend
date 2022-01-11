@@ -12,10 +12,13 @@
               <el-breadcrumb-item ><a style="color:#2d8cf0">视频审核</a></el-breadcrumb-item>
 
             </el-breadcrumb>
-            <Menu mode="horizontal"  active-name="1" style="z-index: 0">
+            <Menu mode="horizontal"  :active-name="activeName" style="z-index: 0">
               <MenuItem name="1"  @click.native="getAllVideoToAudit" >
-                <Icon type="ios-paper" />
-                待审核
+
+                  <Icon type="ios-paper" />
+
+                  待审核
+
               </MenuItem>
               <MenuItem name="2" @click.native="getPublished2Video " >
                 <Icon type="ios-people" />
@@ -160,8 +163,7 @@ export default {
   data(){
 
     return{
-      openNames:['6'],
-      activeName:'6-1',
+      activeName:1,
       whetherShow:1,
       loading:false,
       percentage:0,

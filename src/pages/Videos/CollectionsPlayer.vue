@@ -199,8 +199,11 @@ export default {
     async getVideoByColumn(columnid){
       var data = (await (getVideoByColumn(columnid,1,1000))).data;
       if(data.status === 200){
-        this.total = data.data.videoList.length;
+
+        this.total = data.data.total;
         this.tableData = data.data.videoList;
+        console.log(data.data.videoList);
+        console.log(data.data.videoList);
         this.playerOptions['sources'][0]['src'] = data.data.videoList[0]["url"];
         this.videoInfo.id = data.data.videoList[0]["id"];
         this.currentVideo = data.data.videoList[0]["title"];

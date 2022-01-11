@@ -45,7 +45,7 @@
 <!--            <Icon type="md-person"></Icon>-->
 <!--            <span>视频审核</span>-->
 <!--          </MenuItem>-->
-          <Submenu v-if="identity>=1"  name="6" to="/videoPass">
+          <Submenu  name="6" to="/videoPass" v-if="identity<1" disabled>
             <template slot="title">
               <Icon type="md-person" />
               视频审核
@@ -55,6 +55,34 @@
               <MenuItem name="6-2" to="/collectionPass">专栏审核</MenuItem>
             </template>
           </Submenu>
+        <Submenu  name="6" to="/videoPass" v-else>
+          <template slot="title">
+            <Icon type="md-person" />
+            视频审核
+          </template>
+          <template>
+            <MenuItem name="6-1" to="/videoPass">视频审核</MenuItem>
+            <MenuItem name="6-2" to="/collectionPass">专栏审核</MenuItem>
+          </template>
+        </Submenu>
+        <Submenu   name="7" to="/videoPass" v-if="identity<2" disabled>
+          <template slot="title">
+            <Icon type="md-person" />
+            管理权限
+          </template>
+          <template>
+            <MenuItem name="7-1" to="/adminManage">管理员</MenuItem>
+          </template>
+        </Submenu>
+        <Submenu   name="7" to="/videoPass" v-else>
+          <template slot="title">
+            <Icon type="md-person" />
+            管理权限
+          </template>
+          <template>
+            <MenuItem name="7-1" to="/peopleManage">用户管理</MenuItem>
+          </template>
+        </Submenu>
       </Menu>
 
 </template>

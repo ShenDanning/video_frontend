@@ -31,7 +31,7 @@ export default {
       } else {
         sessionStorage.clear();
         localStorage.clear();
-        window.location.href="http://10.10.22.106";
+        window.location.href="http://v.shu.edu.cn";
         this.$Notice.warning({ title: "请检查工号或密码是否正确" });
       }
     },

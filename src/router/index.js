@@ -12,6 +12,7 @@ import TypeManage from "../pages/admin/TypeManage";
 import UploadFile from "../pages/admin/UploadFile";
 import CollectionsPlayer from "../pages/Videos/CollectionsPlayer";
 import collectionPass from "../pages/manager/collectionPass";
+import adminManage from "../pages/manager/adminManage";
 // import sortdemo from "../pages/home/sortdemo"
 // import demo from "../pages/admin/demo"
 import myColumn from "../pages/admin/myColumn";
@@ -111,6 +112,11 @@ export default new Router({
       path:'/peopleManage',
       name:'peopleManage',
       component:peopleManage
+    },
+    {
+      path:'/adminManage',
+      name:'adminManage',
+      component:adminManage
     }
 
 

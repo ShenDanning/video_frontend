@@ -282,3 +282,30 @@ export function getPublishedCollections(name,curPage,pageSize){
 export function getIdentity(){
   return axios.get("/v1/getIdentity");
 }
+
+export function getUserTypes(){
+  return axios.get("/v1/admin/getUserTypes")
+
+}
+
+export function  getUsers(type,curPage,pageSize){
+  return axios.get("/v1/admin/getAllUsers",{
+    params:{
+      'type':type,
+      'curPage':curPage,
+      'pageSize':pageSize
+    }
+  })
+}
+
+export function setUserType(userId,type,mail){
+  return axios.get("/v1/admin/setUserType",{
+    params:{
+      'userId':userId,
+      'type':type,
+      'mail':mail
+    }
+
+  })
+
+}
