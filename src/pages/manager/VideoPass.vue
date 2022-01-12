@@ -27,6 +27,7 @@
             </Menu>
 
             <el-table
+              v-show = "auditPublished"
               :data="tableData.slice((curPage-1)*pageSize,curPage*pageSize)"
               style="width: 100%;margin-top: 10px;z-index: 0"
             >
@@ -64,7 +65,9 @@
                 align="center"
                 label="简介"
                 width="250">
+
               </el-table-column>
+
               <el-table-column
                 prop="tag"
                 align="center"
@@ -96,7 +99,102 @@
                              size="small">
                     通过
                   </el-button>
+                  <el-button
+                    @click.native.prevent="getRow(scope.$index,scope.row,2)"
+                    type="text"
+                    size="small">
+                    预览
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-table
+              v-show = "audit"
+              :data="tableData.slice((curPage-1)*pageSize,curPage*pageSize)"
+              style="width: 100%;margin-top: 10px;z-index: 0"
+            >
+              <el-table-column
+                fixed
+                align="center"
+                label="标题"
+                width="200"
+                show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <span style="color: red" v-if="scope.row.isSensitive.includes('title')" >
+                    {{scope.row.title}}
+                  </span>
+                  <span v-else>
+                    {{scope.row.title}}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="picture"
+                label="封面"
+                width="100">
+                <template slot-scope="scope">
+                  <img :src="scope.row.picture" style="height:40px">
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                prop="author"
+                label="上传人"
+                width="150">
+              </el-table-column>
+              <el-table-column
+                prop="uploadTime"
+                label="上传时间"
+                :formatter="dateFormat"
+                align="center"
+                width="150">
+              </el-table-column>
+              <el-table-column
 
+                align="center"
+                label="简介"
+                width="250">
+                <template slot-scope="scope">
+                  <span style="color: red" v-if="scope.row.isSensitive.includes('description')" >
+                    {{scope.row.description}}
+                  </span>
+                  <span v-else>
+                    {{scope.row.description}}
+                  </span>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                prop="tag"
+                align="center"
+                label="类型"
+                width="100">
+              </el-table-column>
+              <el-table-column
+                fixed="right"
+                label="操作"
+                width="150"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-button v-if="scope.row.publish==1"
+                             @click.native.prevent="getRow(scope.$index,scope.row,0)"
+                             type="text"
+                             size="small">
+                    拒绝
+                  </el-button>
+                  <el-button v-else
+                             @click.native.prevent="getRow(scope.$index,scope.row,0)"
+                             type="text"
+                             size="small">
+                    取消通过
+                  </el-button>
+                  <el-button v-if="scope.row.publish==1"
+                             @click.native.prevent="getRow(scope.$index,scope.row,1)"
+                             type="text"
+                             size="small">
+                    通过
+                  </el-button>
                   <el-button
                     @click.native.prevent="getRow(scope.$index,scope.row,2)"
                     type="text"
@@ -128,6 +226,7 @@
               <video style="width: 475px" :src="videoInfo.url" ref="vueMiniPlayer" controls='controls' autoplay>
               </video>
             </Modal>
+
 
             <div class="loading" v-if="loading" >
               <h4 class="tips">{{tips}}</h4>
@@ -163,6 +262,8 @@ export default {
   data(){
 
     return{
+      audit:false,
+      auditPublished:false,
       activeName:1,
       whetherShow:1,
       loading:false,
@@ -213,7 +314,7 @@ export default {
         type: '',
         url:'',
         tag:'',
-
+        isSensitive:[],
       }],
       columnAdd: {
         name:'',
@@ -320,10 +421,31 @@ export default {
         this.videoInfo.id=rows.id;
         this.videoInfo.url=rows.url;
       }else if (val === 1){
+        if(rows.isSensitive.length != 0){
+          // alert(rows.isSensitive)
+          // this.modal3 = true;
+          this.confirmPublish(rows.id,2,tagid)
+        }
         //通过
-        this.setPublish(rows.id,2,tagid)
+        else this.setPublish(rows.id,2,tagid)
       }
     },
+    confirmPublish(id,isPublish,tagid) {
+      this.$confirm('本视频含有敏感词汇，是否确认通过?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.setPublish(id,2,tagid)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消发布'
+        });
+        location.reload()
+      });
+    },
+
     async setPublish(id,isPublish,tag){
 
       // alert(this.videoUpload.type);
@@ -369,6 +491,8 @@ export default {
     },
 
     async getAllVideoToAudit(){
+      this.audit = true
+      this.auditPublished = false
       var data = (await (getAllVideoToAudit(this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.tableData = data.data.videoList;
@@ -377,6 +501,8 @@ export default {
     },
     // getPublished2Video
     async getPublished2Video(){
+      this.auditPublished = true
+      this.audit = false
       var data = (await (getPublished2Video(this.curPage,this.pageSize))).data;
       if(data.status === 200){
         this.whetherShow = 0

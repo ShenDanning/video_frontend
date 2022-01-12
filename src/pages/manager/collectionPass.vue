@@ -30,11 +30,19 @@
             >
               <el-table-column
                 fixed
-                prop="name"
+
                 align="center"
                 label="标题"
                 width="200"
                 show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <span style="color: red" v-if="scope.row.isSensitive.includes('name')" >
+                    {{scope.row.name}}
+                  </span>
+                  <span v-else>
+                    {{scope.row.name}}
+                  </span>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="picture"
@@ -58,10 +66,17 @@
                 width="150">
               </el-table-column>
               <el-table-column
-                prop="description"
                 align="center"
                 label="简介"
                 width="250">
+                <template slot-scope="scope">
+                  <span style="color: red" v-if="scope.row.isSensitive.includes('description')" >
+                    {{scope.row.description}}
+                  </span>
+                  <span v-else>
+                    {{scope.row.description}}
+                  </span>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="videos"
@@ -105,8 +120,8 @@
             >
               <el-table-column
                 fixed
-                prop="name"
                 align="center"
+                prop="name"
                 label="标题"
                 width="200"
                 show-overflow-tooltip>
@@ -238,6 +253,7 @@ export default {
         videos:'',
         id:'',
         picture:'',
+        isSensitive:[],
       }],
       columnPublish:{
         // tag:'',
@@ -353,12 +369,31 @@ export default {
         this.videoInfo.id=rows.id;
         this.videoInfo.url=rows.url;
       }else if (val === 1){
+
+        if(rows.isSensitive.length != 0){
+          // alert(rows.isSensitive)
+          // this.modal3 = true;
+          this.confirmPublish(rows.id)
+        }
         //通过
-        this.setPublish(rows.id)
-        // this.getAudit()
-        // this.videoInfo.id=rows.id;
-        // this.modal4 = true
+        else this.setPublish(rows.id)
+
       }
+    },
+    confirmPublish(id) {
+      this.$confirm('本专辑含有敏感词汇，是否确认通过?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.setPublish(id)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消发布'
+        });
+        location.reload()
+      });
     },
 
 
