@@ -182,8 +182,7 @@ export function editType(params){
 }
 
 export function uploadVideoToServer(params,config){
-  return axios.post('/v1/uploadVideo',params,config
-  )
+  return axios.post('/v1/uploadVideo',params,config)
 }
 export function setPublish(params){
   return axios.post('/v1/setPublish',params,{ headers: {
@@ -305,7 +304,31 @@ export function setUserType(userId,type,mail){
       'type':type,
       'mail':mail
     }
-
   })
 
+}
+export function addUser(params){
+  return axios.post("/v1/admin/addUser",params)
+
+}
+export function getAnalyseRes(params){
+  return axios.post("http://127.0.0.1:5000/yolov5",params)
+
+}
+export function Analysing(videoId){
+  return axios.get("/v1/analyse/analysing",
+    {
+      params:{
+        'videoId':videoId
+      }
+    })
+}
+
+export function getResult(videoId){
+  return axios.get("/v1/analyse/getResult",
+    {
+      params:{
+        'videoId':videoId
+      }
+    })
 }

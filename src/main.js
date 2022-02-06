@@ -31,7 +31,8 @@ Vue.config.productionTip = false
 // var axios = require('axios');
 // axios.defaults.baseURL = 'http://10.10.22.106';
 /* eslint-disable no-new */
-
+import * as echarts from 'echarts';
+Vue.prototype.$echarts = echarts
 axios.interceptors.request.use(
   config => {
     if (localStorage.getItem("token")) {

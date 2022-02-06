@@ -109,9 +109,23 @@
                 width="150">
               </el-table-column>
               <el-table-column
+                align="center"
+                label="分析状态"
+                width="100">
+                <template slot-scope="scope" >
+                  <div slot="reference" class="name-wrapper"  v-if="scope.row.isanalyse===1">
+                    <el-tag size="medium" type="warning" >分析中</el-tag>
+                  </div>
+                  <div slot="reference" class="name-wrapper"  v-if="scope.row.isanalyse===2">
+                    <el-tag size="medium" type="success" >分析完成</el-tag>
+                  </div>
+                </template>
+              </el-table-column>
+
+              <el-table-column
                 fixed="right"
                 label="操作"
-                width="200"
+                width="250"
                 align="center"
               >
                 <template slot-scope="scope">
@@ -127,12 +141,26 @@
                     size="small">
                     编辑
                   </el-button>
+
                   <el-button
                     @click.native.prevent="getRow(scope.$index,scope.row,2)"
                     type="text"
                     size="small">
                     预览
                   </el-button>
+                  <el-button v-if="scope.row.isanalyse===0"
+                    @click.native.prevent="analyse(scope.row)"
+                    type="text"
+                    size="small">
+                    分析
+                  </el-button>
+                  <el-button v-if="scope.row.isanalyse===2"
+                             @click.native.prevent="lookReport(scope.row)"
+                             type="text"
+                             size="small">
+                    查看分析报告
+                  </el-button>
+
                 </template>
               </el-table-column>
             </el-table>
@@ -336,7 +364,7 @@ import {
   editVideo,
   getTagList,
   getPersonalVideoByTitle, getTypeList, getVideoByType,
-  uploadVideoToServer
+  uploadVideoToServer, Analysing
 } from "../../api/api";
 export default {
   name: "VideoManange",
@@ -682,13 +710,15 @@ export default {
       this.modal3 = true
 
     },
-    // typeShow(){
-    //   this.modal5 = true
-    // },
-    // editShow(){
-    //   // alert("hahah")
-    //   this.modal4 = true
-    // },
+    async analyse(row){
+        var  data = (await Analysing(row.id));
+        if(data.status===200){
+             this.getAllVideo();
+           //  setInterval(this.get1(), 1000);
+
+        }
+
+    },
 
     getRow(index, rows,val) {
       if(val===1){
@@ -740,6 +770,11 @@ export default {
       }else{
         this.$message.error("Fail");
       }
+
+    },
+    lookReport(row){
+      //alert(row.id)
+      this.$router.push({name: 'analyseHome',params:{ videoId:row.id}});
 
     },
 

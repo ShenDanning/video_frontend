@@ -20,6 +20,7 @@ import ColumnVideos from "../pages/admin/ColumnVideos";
 import VideoPass from "../pages/manager/VideoPass";
 import adminCollectionVideos from "../pages/manager/adminCollectionVideos";
 import peopleManage from "../pages/manager/peopleManage"
+import analyseHome from "../pages/videoAnalyse/analyseHome";
 Vue.use(Router)
 
 export default new Router({
@@ -117,6 +118,11 @@ export default new Router({
       path:'/adminManage',
       name:'adminManage',
       component:adminManage
+    },
+    {
+      path:'/analyseHome',
+      name:'analyseHome',
+      component:analyseHome
     }
 
 

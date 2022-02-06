@@ -114,7 +114,7 @@
                   <el-input v-model="userInfo.id" ></el-input>
                 </el-form-item>
                 <el-form-item label="姓名">
-                  <el-input v-model="userInfo.id"></el-input>
+                  <el-input v-model="userInfo.name"></el-input>
                 </el-form-item>
                 <el-form-item label="身份">
                   <el-select v-model="userInfo.type" placeholder="请选择">
@@ -153,7 +153,7 @@ import {
   setPublish,
   uploadVideoToServer,
   getVideoByColumn, editVideo, editPicture, addVideo, deleteVideo, getAllVideoByColumn,
-  setUp, setDown, getAllVideoToAudit, getPublished2Video, getTagList, getUserTypes, getUsers, setUserType
+  setUp, setDown, getAllVideoToAudit, getPublished2Video, getTagList, getUserTypes, getUsers, setUserType, addUser
 } from "../../api/api";
 export default {
   name: "VideoManange",
@@ -224,8 +224,24 @@ export default {
       }
 
     },
-    addUser(){
-      alert("添加用户")
+    async addUser(){
+       if(this.userInfo.id===''||this.userInfo.name===''||this.userInfo.type===''){
+         this.$Message.warning("请填写完整");
+       }else {
+         var formdata = new FormData();
+         formdata.append('userId',this.userInfo.id);
+         formdata.append('userName',this.userInfo.name);
+         formdata.append('type',this.userInfo.type);
+         formdata.append('mail',this.userInfo.mail);
+         var data  = (await addUser(formdata)).data;
+         if(data.status===200){
+           this.$Message.success(data.msg);
+         }else {
+           this.$Message.error(data.msg);
+         }
+       }
+
+
     },
 
 
