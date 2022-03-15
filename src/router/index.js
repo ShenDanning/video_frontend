@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import videoplayer from '../pages/Videos/videoplayer.vue'
-
+import testplayer from '../pages/test/videoplayer.vue'
 import videoListtest from '../pages/Videos/videoListtest.vue'
 import VideoManange from "../pages/admin/VideoManange";
 import videoList from "../pages/Videos/videoList";
@@ -21,6 +21,7 @@ import VideoPass from "../pages/manager/VideoPass";
 import adminCollectionVideos from "../pages/manager/adminCollectionVideos";
 import peopleManage from "../pages/manager/peopleManage"
 import analyseHome from "../pages/videoAnalyse/analyseHome";
+import CollectionVideo from "../pages/home/CollectionVideo";
 Vue.use(Router)
 
 export default new Router({
@@ -123,6 +124,17 @@ export default new Router({
       path:'/analyseHome',
       name:'analyseHome',
       component:analyseHome
+    },
+    {
+      path:'/CollectionVideo',
+      name:'CollectionVideo',
+      component:CollectionVideo
+    },
+    {
+      path:'/testplayer',
+      name:'testplayer',
+      component:testplayer
+
     }
 
 

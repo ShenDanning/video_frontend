@@ -43,38 +43,32 @@
             <h2>
               选集
             </h2>
-            <el-card shadow="never" class="infinite-list" v-infinite-scroll="load"  style="overflow:auto;margin-top: 20px;padding:0;background-color: #f8f9fb;height: 380px">
+            <el-card style="overflow:auto;margin-top: 20px;padding:0;background-color: #f8f9fb;height: 380px">
               <Row  v-for="item in tableData" :key="item.id" style="overflow:auto" class="infinite-list-item">
-                <el-button  size="small" style="width: 100%;margin-top: 2px;text-align: left" autofocus
-                            @click="playVideo(item.url,item.id,item.title)"
+                <el-tooltip :content="item.title" placement="top">
+                <el-button  size="small" style="width: 100%;margin-top: 2px;text-align: left;overflow: hidden" autofocus
+                            @click="playVideo(item.url,item.id,item.title,item.description)"
                 >{{item.title}}</el-button>
+                </el-tooltip>
               </Row>
 
             </el-card>
           </Col>
         </Row>
         <Row style="margin-top: 20px">
-          <Col span="5">
-            <el-card :body-style="{ padding: '0px' }">
-              <img :src="collectionPicture" class="image">
-            </el-card>
 
-          </Col>
           <Col Col span="17">
             <el-card  shadow="never" style="border: 0" >
-              <h1 style="text-align: left">{{collectionName}}</h1>
+              <h2 style="text-align: left">{{currentVideo}}</h2>
               <br>
-              <p style="text-align: left">简介：{{collectionDescription }}</p>
+              <p style="text-align: left;max-height: 80px;overflow: auto">简介：{{curVideoIntro}}</p>
+
 
             </el-card>
           </Col>
 
         </Row>
       </div>
-
-
-
-
 
     </Content>
   </Layout>
@@ -86,6 +80,7 @@ import 'video.js/dist/video-js.css'
 import axios from 'axios';
 import HeadMenu from "../admin/HeadMenu";
 import SideMenu from "../admin/SideMenu";
+
 import {getPersonalVideoByTitle,setViews,getVideoByColumn} from "../../api/api";
 Vue.prototype.$axios = axios;
 export default {
@@ -93,6 +88,8 @@ export default {
   data() {
     return {
       currentVideo:'',
+      curVideoName:'',
+      curVideoIntro:'',
       collectionPicture:'',
       tableData: [{
         id:1,
@@ -174,8 +171,8 @@ export default {
     this.username = localStorage.getItem("username")
     //   alert(this.$route.params.title)
     this.url = this.$route.query.id;
-    this.collectionName = this.$route.query.name;
-    this.collectionDescription = this.$route.query.description;
+    this.curVideoName = this.$route.query.name;
+    this.curVideoIntro = this.$route.query.description;
     this.getVideoByColumn(this.url)
   },
   computed: {
@@ -189,10 +186,11 @@ export default {
       console.log(data)
     },
 
-    playVideo(url,id,title){
+    playVideo(url,id,title,description){
       this.videoInfo.id = id
       this.playerOptions['sources'][0]['src']=url;
       this.currentVideo = title;
+      this.curVideoIntro = description;
       console.log(this.playerOptions)
     },
 
@@ -207,6 +205,7 @@ export default {
         this.playerOptions['sources'][0]['src'] = data.data.videoList[0]["url"];
         this.videoInfo.id = data.data.videoList[0]["id"];
         this.currentVideo = data.data.videoList[0]["title"];
+
         this.collectionPicture = data.data.videoList[0]["picture"];
       }
     },
@@ -217,6 +216,7 @@ export default {
 
     onPlayerPlay($event) {
       this.isPlay = true;
+
     },
 
     onPlayerEnded($event) {
@@ -259,6 +259,7 @@ export default {
   top: 15px;
   left: 20px;
 }
+
 </style>
 
 

@@ -13,14 +13,14 @@
 
             </el-breadcrumb>
             <Menu mode="horizontal"  :active-name="activeName" style="z-index: 0">
-              <MenuItem name="1"  @click.native="getAllVideoToAudit" >
+              <MenuItem name="1"  @click.native="getAllVideoToAudit(1)" >
 
                   <Icon type="ios-paper" />
 
                   待审核
 
               </MenuItem>
-              <MenuItem name="2" @click.native="getPublished2Video " >
+              <MenuItem name="2" @click.native="getPublished2Video(1)" >
                 <Icon type="ios-people" />
                 已审核
               </MenuItem>
@@ -28,7 +28,7 @@
 
             <el-table
               v-show = "auditPublished"
-              :data="tableData.slice((curPage-1)*pageSize,curPage*pageSize)"
+              :data="tableData"
               style="width: 100%;margin-top: 10px;z-index: 0"
             >
               <el-table-column
@@ -64,7 +64,8 @@
                 prop="description"
                 align="center"
                 label="简介"
-                width="250">
+                width="250"
+                show-overflow-tooltip>
 
               </el-table-column>
 
@@ -110,7 +111,7 @@
             </el-table>
             <el-table
               v-show = "audit"
-              :data="tableData.slice((curPage-1)*pageSize,curPage*pageSize)"
+              :data="tableData"
               style="width: 100%;margin-top: 10px;z-index: 0"
             >
               <el-table-column
@@ -368,7 +369,6 @@ export default {
         file:'',
         type:''
       },
-
       rules: {
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' }
@@ -486,11 +486,25 @@ export default {
 
     handleCurrentChange(newPage) {
       // 页码改变触发
-      alert(newPage)
-      this.curPage = newPage
+
+      this.curPage = newPage;
+      if(this.audit===true){
+        this.auditPublished=false;
+        this.audit=true;
+        this.getAllVideoToAudit()
+
+      }else{
+        this.auditPublished = true
+        this.audit = false
+        this.getPublished2Video()
+      }
+
     },
 
-    async getAllVideoToAudit(){
+    async getAllVideoToAudit(val){
+      if(val){
+        this.curPage=1
+      }
       this.audit = true
       this.auditPublished = false
       var data = (await (getAllVideoToAudit(this.curPage,this.pageSize))).data;
@@ -500,12 +514,15 @@ export default {
       }
     },
     // getPublished2Video
-    async getPublished2Video(){
+    async getPublished2Video(val){
+      if(val){
+        this.curPage=1;
+      }
       this.auditPublished = true
       this.audit = false
       var data = (await (getPublished2Video(this.curPage,this.pageSize))).data;
       if(data.status === 200){
-        this.whetherShow = 0
+
         this.tableData = data.data.videoList;
         this.total = data.data.total;
         // console.log(this.tableData)

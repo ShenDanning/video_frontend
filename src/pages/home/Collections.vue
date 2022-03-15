@@ -1,12 +1,11 @@
 <template>
   <div>
 
-      <el-empty v-if="collectionsInfo.length==0" description="暂时没有合集"></el-empty>
-
+    <el-empty v-if="collectionsInfo.length==0" description="暂时没有合集"></el-empty>
     <Row v-else style="margin-top: 20px">
       <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in collectionsInfo" :key="item.id">
         <el-card :body-style="{ padding: '0px' }">
-          <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item.id,item.name,item.description)" >
+          <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item.id,item.name,item.description,item.picture)" >
           <div style="padding: 14px;text-align: left">
             <h3 style="font-weight: bold;color: #666" class="view-text">
               {{ item.name }} <el-tag  size="mini">合集</el-tag>
@@ -56,12 +55,14 @@ export default {
       },
 
 
-      openCollections(key,name,description) {
-        this.$router.push({name:'CollectionPlayer',
+      openCollections(key,name,description,picture) {
+        this.$router.push({name:'CollectionVideo',
           query:{
             id: key,
             name:name,
-            description:description
+            description:description,
+            picture:picture
+
           }})
       },
       async getPublishedCollectionsFront(val){
@@ -71,16 +72,11 @@ export default {
           this.total = data.data.total;
           console.log(this.collectionsInfo,this.total)
         }
-
-
       },
     },
     mounted() {
       this.getPublishedCollectionsFront(1);
-
     }
-
-
 }
 </script>
 

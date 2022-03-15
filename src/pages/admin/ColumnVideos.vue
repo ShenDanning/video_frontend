@@ -42,6 +42,14 @@
                 show-overflow-tooltip>
               </el-table-column>
               <el-table-column
+                prop="picture"
+                label="封面"
+                width="100">
+                <template slot-scope="scope">
+                  <img :src="scope.row.picture" style="height:40px">
+                </template>
+              </el-table-column>
+              <el-table-column
                 align="center"
                 prop="views"
                 label="播放量"
@@ -58,6 +66,7 @@
                 prop="description"
                 align="center"
                 label="简介"
+                show-overflow-tooltip
                 width="250">
               </el-table-column>
               <el-table-column
@@ -152,6 +161,21 @@
                 <el-form-item label="视频简介">
                   <el-input  type="textarea" placeholder="请输入简介" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoUpload.description"></el-input>
                 </el-form-item>
+                <el-form-item label="视频封面">
+                  <el-upload
+                    class="upload-demo"
+                    drag
+                    action="#"
+                    multiple
+                    :limit="1"
+                    :http-request="imgAdd"
+                    v-model="videoUpload.picture"
+                  >
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上传图片文件</div>
+                  </el-upload>
+                </el-form-item>
                 <el-form-item label="视频" prop="file">
                   <el-upload
                     ref="upload"
@@ -161,7 +185,7 @@
                     action="#"
                     :auto-upload="false"
                     accept=".mp4,.avi"
-                    :on-exceed="handleExceed"
+
                     v-model="uploadVideo.file"
                   >
                     <i class="el-icon-upload"></i>
@@ -184,6 +208,22 @@
                 <el-form-item label="视频简介">
                   <el-input  type="textarea" :placeholder="videoEdit.description" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoEdit.description"></el-input>
                 </el-form-item>
+                <el-form-item label="视频封面">
+                  <el-upload
+                    class="upload-demo"
+                    drag
+                    action="#"
+                    multiple
+                    :limit="1"
+                    :http-request="imgAdd"
+
+                  >
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上传图片文件</div>
+                  </el-upload>
+                </el-form-item>
+
 
 
               </el-form>
@@ -346,6 +386,13 @@ export default {
     }
   },
   methods: {
+    async imgAdd($file){
+      console.log($file)
+      // this.videoInfo.id=rows.id;
+      this.videoInfo.picture = $file;
+      this.videoEdit.picture = $file;
+      this.videoUpload.picture = $file;
+    },
     changeSwitch(row,index){
       if(row.publish===0){
         this.undoSetPublish(row.id);
@@ -399,6 +446,7 @@ export default {
       formdata.append('title',this.videoUpload.title);
       formdata.append('description',this.videoUpload.description);
       formdata.append('collectionId',this.columnId);
+      formdata.append('picture',this.videoUpload.picture.file);
       let config = {
         onUploadProgress: progressEvent => {
           //progressEvent.loaded:已上传文件大小
@@ -476,12 +524,13 @@ export default {
     },
     async editVideo(){
       var formdata = new FormData();
-      // if(this.videoEdit.picture.file!=null){
-      //   this.editPicture()
-      // }
+      if(this.videoEdit.picture.file!=null){
+        this.editPicture()
+      }
       formdata.append('title',this.videoEdit.title);
       formdata.append('description',this.videoEdit.description);
       formdata.append('videoId',this.videoEdit.id);
+
       formdata.append('type','0');
       var data =(await editVideo(formdata)).data;
       if(data.status===200){
@@ -535,7 +584,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.deleteVideo(rows.id);
-        this.searchTree(this.columnId);
+        this.getVideoByColumn();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -547,16 +596,12 @@ export default {
       var data  = (await(deleteVideo(videoId))).data;
       if(data.status===200){
         this.$message.success("删除成功")
-        this.getAllVideo(1)
+        this.getVideoByColumn();
       }else{
         this.$message.error("删除失败")}
     },
     //保存图片到后台
-    async imgAdd($file){
 
-      this.columnEdit.picture = $file;
-      this.columnAdd.picture = $file;
-    },
 
     addShow(){
       this.modal3 = true
@@ -587,7 +632,7 @@ export default {
     },
     handleCurrentChange(newPage) {
       // 页码改变触发
-      alert(newPage)
+   //   alert(newPage)
       this.curPage = newPage
     },
 

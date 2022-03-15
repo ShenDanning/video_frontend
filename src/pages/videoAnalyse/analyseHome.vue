@@ -47,7 +47,6 @@
             <div id="bar" style="width:100%;height:400px;"></div>
 
           </el-card>
-
         </Col>
         <Col span="12" offset="1" >
           <el-card style="text-align: left">
@@ -160,10 +159,8 @@ export default {
 
         this.videoInfo=data.data.videoInfo[0];
         this.detailInfo= data.data.detail;
-        this.keyframes= data.data.keyframes;
+        this.keyframes= data.data.keyframeInfo;
         this.len =data.data.detail.length;
-
-
 
       }
 

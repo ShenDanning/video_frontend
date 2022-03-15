@@ -15,38 +15,89 @@
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item ><a @click="backtolast" style="color:#2d8cf0">返回上一级</a></el-breadcrumb-item>
         <el-breadcrumb-item>视频播放</el-breadcrumb-item>
-
       </el-breadcrumb>
       <Row type="flex"  align="top" class="code-row-bg" style="margin-top: 20px">
-        <Col span="17" >
+        <Col span="15" >
           <video-player   class="video-player vjs-custom-skin"
                           ref="videoPlayer" :options="playerOptions" :playsinline="true"
                           customEventName="customstatechangedeventname"
                           @play="onPlayerPlay($event)"
                           @pause="onPlayerPause($event)"
                           @ended="onPlayerEnded($event)"
+                          @timeupdate="onPlayerTimeupdate($event)"
           >
           </video-player>
         </Col>
-        <Col span="6" offset="1" style="text-align: left">
-          <h2>
-            {{videoInfo.title}}
-          </h2>
-          <el-card class="box-card" shadow="never" style="margin-top: 20px;padding:0;background-color: #f8f9fb">
-                  <span>
+        <Col span="7" offset="1" style="text-align: left">
+          <el-tabs v-model="activeName" type="card" >
+            <el-tab-pane label="视频信息" name="videoInfo">
+              <h2>
+                {{videoInfo.title}}
+              </h2>
+              <el-card class="box-card" shadow="never" style="margin-top: 20px;padding:0;background-color: #f8f9fb">
+                 <div style="overflow: auto;max-height: 150px">
                     简介：{{videoInfo.description}}
-                  </span>
-            <br>
-            <span>
+                 </div>
+                <br>
+                <span>
                    作者：{{videoInfo.author}}
             </span>
-            <br>
-            <span>
+                <br>
+                <span>
                    播放量：{{videoInfo.views}}
             </span>
+              </el-card>
 
-          </el-card>
+            </el-tab-pane>
+            <el-tab-pane label="视频分析" name="videoAnalyse">
+              <span v-if="isAnalyse===0">尚未分析</span>
+              <el-card v-if="isAnalyse===1" class="box-card" shadow="never" style="margin-top: 7px;padding:0;background-color: #f8f9fb">
+
+                <h4>详细信息</h4>
+                           帧数：<span style="color: #2b85e4">{{videoParam.frames}}</span>
+                           帧率：<span style="color: #2b85e4">{{videoParam.fps| numFilter}}</span>
+                            时长：<span style="color: #2b85e4">{{videoParam.time| numFilter}}s</span>
+
+                <br/>
+                <h4 style="float: left;margin-top: 5px">关键帧数：{{keyframes.length}}</h4>
+                <br/>
+                <Row style="margin-top: 20px">
+                  <Col :span="8" style="padding: 5px; padding-bottom: 10px;" v-for="item in keyframes.slice((curPage-1)*pageSize,curPage*pageSize)" :key="keyframes.indexOf(item)">
+                    <img :src="item.url" style="width: 100%;height: 50px" @click="changeTime(item.time)">
+                  </Col>
+                </Row>
+                <div class="block">
+                  <!--                <span class="demonstration">页数较少时的效果</span>-->
+                  <el-pagination
+                    :current-page="curPage"
+                    :page-size ="pageSize"
+                    :total ="total"
+                    style="padding:30px 0; text-align:center;"
+                    layout="total,prev,next"
+                    @current-change="handleCurrentChange">
+                  </el-pagination>
+                </div>
+<!--                <div class="lateral-sliding">-->
+<!--                  <div class="lateral-sliding-item" v-for="item in keyframes" :key="item">-->
+<!--                    <div class="each-img">-->
+<!--                      <img :src="item.url" class="each-img" @click="changeTime(item.time)">-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+              </el-card>
+            </el-tab-pane>
+            <el-tab-pane label="目标检测" name="third">
+              <span v-if="isAnalyse===0">尚未分析</span>
+
+                <div id="bar" style="width:350px;height: 300px"></div>
+
+
+            </el-tab-pane>
+          </el-tabs>
         </Col>
+      </Row>
+      <Row>
+
       </Row>
     </Content>
   </Layout>
@@ -58,12 +109,35 @@
   import axios from 'axios';
   import HeadMenu from "../admin/HeadMenu";
   import SideMenu from "../admin/SideMenu";
-  import {getPersonalVideoByTitle,setViews} from "../../api/api";
+  import {getPersonalVideoByTitle, getResult, setViews} from "../../api/api";
+  import * as echarts from "echarts";
   Vue.prototype.$axios = axios;
   export default {
     components: {SideMenu, HeadMenu},
+    filters: {
+      numFilter(value) {
+        let realVal = "";
+        if (!isNaN(value) && value !== "") {
+          // 截取当前数据到小数点后两位,改变toFixed的值即可截取你想要的数值
+          realVal = parseFloat(value).toFixed(2);
+        } else {
+          realVal = "--";
+        }
+        return realVal;
+      },
+    },
     data() {
       return {
+        curPage:1,
+        pageSize:9,
+        total:10,
+        isAnalyse:0,
+
+        keyframes:[{
+          time:"",
+          url:''
+        }],
+        activeName:'videoInfo',
         currentVideo:'',
         isPause:false,
         // 很多参数其实没必要的，也还有很多参数没列出来，只是把我看到的所有文章做一个统计
@@ -113,6 +187,11 @@
           author:'',
           views:'',
         },
+        videoParam:{
+          'frames':'',
+          'fps':'',
+          'time':''
+        },
         back: {
           backgroundSize: "100% 100%",
           height: "100%",
@@ -128,6 +207,7 @@
 
    //   alert(this.$route.params.title)
       this.videoInfo.id = this.$route.query.id;
+      this.getResult1(this.videoInfo.id)
       this.videoInfo.title = this.$route.query.title;
       this.videoInfo.author = this.$route.query.author;
       this.videoInfo.description = this.$route.query.description;
@@ -138,6 +218,7 @@
       // this.videoInfo.views = this.$route.query.views;
       console.log(this.videoInfo);
       this.playVideo(this.$route.query.url)
+
     },
     computed: {
       player() {
@@ -145,6 +226,83 @@
       }
     },
     methods: {
+      handleCurrentChange(newPage) {
+        // 页码改变触发
+       // alert(newPage)
+        this.curPage = newPage
+      },
+      async getResult1(videoId){
+
+        var data = (await getResult(videoId)).data;
+        if(data.status===200){
+
+          // this.result = data.data.result;
+          // // alert(this.result)
+           if(data.data===null){
+
+             this.isAnalyse=0;
+           }else{
+
+             this.isAnalyse=1;
+             if(this.isAnalyse===1){
+               this.InitBar(data.data.classes);
+             }
+
+             this.videoParam=data.data.videoInfo[0];
+             this.detailInfo= data.data.detail;
+             this.keyframes= data.data.keyframeInfo;
+             this.total =data.data.keyframeInfo.length;
+           }
+
+
+
+        }
+
+      },
+      InitBar(data){
+        var myChart = echarts.init(document.getElementById('bar'));
+        // 指定图表的配置项和数据
+        var option = {
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            top: '2%',
+            left: 'center',
+            bottom:'2%'
+          },
+          series: [
+            {
+              name: '目标检测',
+              type: 'pie',
+              radius: '50%',
+              avoidLabelOverlap: false,
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              },
+
+              emphasis: {
+                label: {
+                  show: false,
+                  fontSize: '20',
+                  fontWeight: 'bold'
+                },
+              },
+              labelLine: {
+                show: true
+              },
+              label:{
+                show: true
+              },
+
+              data: data
+            }]
+        };
+        myChart.setOption(option)
+
+      },
 
       openArticle(data){
         console.log(data)
@@ -152,6 +310,7 @@
 
       playVideo(url){
         this.playerOptions['sources'][0]['src']=url;
+
         console.log(this.playerOptions)
       },
       show_List(curPage,pageSize){
@@ -198,10 +357,22 @@
         this.player.play();
       }
     },
+      onPlayerTimeupdate($event) {
+        console.log($event);
+      },
+      testSkip(){
+        this.player.currentTime(2)
+      },
+      changeTime(time){
+
+        this.player.currentTime(time)
+      },
       backtolast(){
         this.$router.go(-1);
       }
     },
+
+
 
   }
 </script>
@@ -217,6 +388,22 @@
   position: relative;
   top: 15px;
   left: 20px;
+}
+.lateral-sliding {
+  margin-top: 30px;
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+.lateral-sliding-item {
+  display: flex;
+  margin-right: 20px;
+
+}
+.each-img {
+  width: 300px;
+  height: 225px;
+
 }
 </style>
 

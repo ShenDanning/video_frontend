@@ -75,7 +75,7 @@ export default {
       } else {
         sessionStorage.clear();
         localStorage.clear();
-        window.location.href="http://127.0.0.1:8080/login";
+        window.location.href="http://v.shu.edu.cn";
         this.$Notice.warning({ title: "请检查工号或密码是否正确" });
       }
     },
@@ -101,8 +101,7 @@ export default {
     this.username = localStorage.getItem("username")===null?"未登陆":localStorage.getItem("username")
     console.log(code);
     if (code&&this.username==="未登陆") {
-      // alert(document.location.href.split("?")[0]);
-      this.handleOnClickLogin(code,"http://127.0.0.1:8080/login");
+      this.handleOnClickLogin(code,"http://v.shu.edu.cn/login");
     }
   }
 }

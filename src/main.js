@@ -11,6 +11,7 @@ import ViewUI from 'view-design';
 Vue.prototype.$axios = axios;
 var axios = require('axios');
 // var drag = require('drag2sortable/drag2sortable.jquery.js');
+
 axios.defaults.baseURL = 'https://v.shu.edu.cn/api';
 //axios.defaults.baseURL = 'http://127.0.0.1:8081';
 //引入完成之后需要挂载到vue上
@@ -28,9 +29,8 @@ Vue.use(VideoPlayer)
 Vue.use(ElementUI);
 Vue.use(ViewUI);
 Vue.config.productionTip = false
-// var axios = require('axios');
-// axios.defaults.baseURL = 'http://10.10.22.106';
-/* eslint-disable no-new */
+
+
 import * as echarts from 'echarts';
 Vue.prototype.$echarts = echarts
 axios.interceptors.request.use(

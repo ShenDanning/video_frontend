@@ -85,6 +85,13 @@
                   </div>
                 </template>
               </el-table-column>
+              <el-table-column
+                prop="sortId"
+                align="center"
+                label="顺序"
+                width="100">
+
+              </el-table-column>
 
               <el-table-column
                 align="center"
@@ -148,6 +155,7 @@
                     size="small">
                     预览
                   </el-button>
+<!-- 暂不上线 -->
                   <el-button v-if="scope.row.isanalyse===0"
                     @click.native.prevent="analyse(scope.row)"
                     type="text"
@@ -188,6 +196,10 @@
                 </el-form-item>
                 <el-form-item label="视频简介">
                   <el-input  type="textarea" :autosize="{ minRows: 3, maxRows: 10}" v-model="videoInfo.description"></el-input>
+                </el-form-item>
+                <el-form-item label="视频顺序">
+                  <el-input  placeholder="请输入序号" size="" style="width: 50%" v-model="videoInfo.sortId"></el-input>
+
                 </el-form-item>
                 <el-form-item label="视频封面">
                   <el-upload
@@ -250,6 +262,11 @@
                   </el-select>
                   <el-link icon="el-icon-plus" style="float: right" @click.native.prevent="typeShow()">没有分类？点击添加！</el-link>
                 </el-form-item>
+                <el-form-item label="视频顺序">
+                  <el-input  placeholder="请输入序号" size="" style="width: 50%" v-model="videoUpload.sortId"></el-input>
+                  <p style="font-size: 12px;color: #999999;"> 可不填，不影响上传，发布后按上传时间先后顺序显示</p>
+                </el-form-item>
+
 
                 <el-form-item label="视频封面" prop="picture">
                   <el-upload
@@ -281,7 +298,6 @@
                     <div class="el-upload__text">将文件拖到此处，或<em>点击选择文件</em></div>
                     <div slot="tip" class="el-upload__tip">只能上传mp4/avi文件，且不超过1000M，注意：上传avi时处理时间较长</div>
                   </el-upload>
-
                 </el-form-item>
               </el-form>
             </Modal>
@@ -424,6 +440,7 @@ export default {
         description:'',
         picture:'',
         url:'',
+        sortId:'',
         type:'',
       },
       TypeInfo: {
@@ -442,7 +459,8 @@ export default {
         description:'',
         picture:'',
         file:'',
-        type:''
+        type:'',
+        sortId:''
       },
       rules: {
         title: [
@@ -486,6 +504,7 @@ export default {
       formdata.append('description',this.videoUpload.description);
       formdata.append('picture',this.videoUpload.picture.file);
       formdata.append('typeId',this.videoUpload.type);
+      formdata.append('sortId',this.videoUpload.type);
       let config = {
         onUploadProgress: progressEvent => {
           //progressEvent.loaded:已上传文件大小
@@ -761,6 +780,7 @@ export default {
       formdata.append('title',this.videoInfo.title);
       formdata.append('description',this.videoInfo.description);
       formdata.append('videoId',this.videoInfo.id);
+      formdata.append('sortId',this.videoInfo.sortId);
       formdata.append('type',this.videoInfo.type);
       var data =(await editVideo(formdata)).data;
       if(data.status===200){
