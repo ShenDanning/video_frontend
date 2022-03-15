@@ -277,6 +277,13 @@ export function getPublishedCollections(name,curPage,pageSize){
     }
   })
 }
+export function getCollectionInfoById(id){
+  return axios.get("/v1/collections/getCollectionInfoById",{
+    params:{
+      'id':id,
+    }
+  })
+}
 
 export function getIdentity(){
   return axios.get("/v1/getIdentity");

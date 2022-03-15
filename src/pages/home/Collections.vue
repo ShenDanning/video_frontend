@@ -5,7 +5,7 @@
     <Row v-else style="margin-top: 20px">
       <Col :span="6" style="padding-left: 10px; padding-bottom: 10px;" v-for="item in collectionsInfo" :key="item.id">
         <el-card :body-style="{ padding: '0px' }">
-          <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item)" >
+          <img :src="item.picture" style="height:140px;width:100%" class="image" @click="openCollections(item.id,item.name,item.description,item.picture)" >
           <div style="padding: 14px;text-align: left">
             <h3 style="font-weight: bold;color: #666" class="view-text">
               {{ item.name }} <el-tag  size="mini">合集</el-tag>
@@ -55,10 +55,15 @@ export default {
       },
 
 
-      openCollections(item) {
-        this.$router.push({name:'CollectionVideo'})
-        localStorage.setItem("collectionInfo",JSON.stringify(item))
+      openCollections(key,name,description,picture) {
+        this.$router.push({name:'CollectionVideo',
+          query:{
+            id: key,
+            // name:name,
+            // description:description,
+            // picture:picture
 
+          }})
       },
       async getPublishedCollectionsFront(val){
         var data = (await getPublishedCollections("",this.curPage,this.pageSize)).data;

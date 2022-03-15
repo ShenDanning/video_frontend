@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import {getVideoByColumn} from "../../api/api";
+import {getPublishedCollections, getVideoByColumn,getCollectionInfoById} from "../../api/api";
 import moment from "moment";
 
 export default {
@@ -94,7 +94,6 @@ export default {
       return moment(date).format("YYYY-MM-DD");
     },
     async getVideos(val){
-
       if(val){
         this.curPage=val;
       }
@@ -102,6 +101,14 @@ export default {
       if(data.status === 200){
         this.total = data.data.total;
         this.videoInfo = data.data.videoList;
+      }
+    },
+    async getCollectionInfoById(val){
+      var data = (await getCollectionInfoById(val)).data;
+      if(data.status===200){
+        this.picture = data.data.collectionInfo["picture"];
+        this.description = data.data.collectionInfo["description"];
+        this.curCollection = data.data.collectionInfo["name"];
 
       }
     },
@@ -123,12 +130,12 @@ export default {
   mounted() {
     this.username = localStorage.getItem("username");
    // alert(this.$route.query.name)
-    let collectionInfo=JSON.parse(localStorage.getItem("collectionInfo"));
-    //collectionInfo = localStorage.getItem("collectionInfo")
-    this.curCollection =  collectionInfo.name;
-    this.picture = collectionInfo.picture;
-    this.description = collectionInfo.description;
-    this.collectionId = collectionInfo.id;
+   //  this.curCollection =  this.$route.query.name;
+
+    // this.picture = this.$route.query.picture;
+    // this.description = this.$route.query.description;
+    this.collectionId = this.$route.query.id;
+    this.getCollectionInfoById(this.collectionId)
     this.getVideos();
 
   }
