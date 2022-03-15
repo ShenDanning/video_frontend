@@ -56,11 +56,9 @@ export default {
 
 
       openCollections(item) {
-        this.$router.push({name:'CollectionVideo',
-          query:{
-            value:JSON.stringify(item)
+        this.$router.push({name:'CollectionVideo'})
+        localStorage.setItem("collectionInfo",JSON.stringify(item))
 
-          }})
       },
       async getPublishedCollectionsFront(val){
         var data = (await getPublishedCollections("",this.curPage,this.pageSize)).data;

@@ -123,8 +123,8 @@ export default {
   mounted() {
     this.username = localStorage.getItem("username");
    // alert(this.$route.query.name)
-    let collectionInfo;
-    collectionInfo = JSON.parse(this.$route.query.value)
+    let collectionInfo=JSON.parse(localStorage.getItem("collectionInfo"));
+    //collectionInfo = localStorage.getItem("collectionInfo")
     this.curCollection =  collectionInfo.name;
     this.picture = collectionInfo.picture;
     this.description = collectionInfo.description;
