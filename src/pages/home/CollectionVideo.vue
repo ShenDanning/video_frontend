@@ -123,10 +123,12 @@ export default {
   mounted() {
     this.username = localStorage.getItem("username");
    // alert(this.$route.query.name)
-    this.curCollection =  this.$route.query.name;
-    this.picture = this.$route.query.picture;
-    this.description = this.$route.query.description;
-    this.collectionId = this.$route.query.id;
+    let collectionInfo;
+    collectionInfo = JSON.parse(this.$route.query.value)
+    this.curCollection =  collectionInfo.name;
+    this.picture = collectionInfo.picture;
+    this.description = collectionInfo.description;
+    this.collectionId = collectionInfo.id;
     this.getVideos();
 
   }
